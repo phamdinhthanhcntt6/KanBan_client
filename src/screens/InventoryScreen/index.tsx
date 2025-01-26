@@ -26,6 +26,8 @@ const InventoryScreen = () => {
 
   const [forms, setForms] = useState<FormModel>();
 
+  const [categoryQuantity, setCategoryQuantity] = useState<number>(0);
+
   useEffect(() => {
     getData();
     getProductForm();
@@ -38,6 +40,7 @@ const InventoryScreen = () => {
   const getData = async () => {
     setIsLoading(true);
     try {
+      await getCategoryList();
       await getOrders();
       await getForm();
     } catch (error: any) {
@@ -45,6 +48,13 @@ const InventoryScreen = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getCategoryList = async () => {
+    const api = `/category`;
+    const res = await handleAPI(api);
+    const data = res.data.items.length;
+    setCategoryQuantity(data);
   };
 
   const getOrders = async () => {
@@ -98,19 +108,21 @@ const InventoryScreen = () => {
         <div className="text-lg font-medium mb-4">Overall Inventory</div>
         <div className="flex flex-row justify-between text-gray-600">
           <div className="">
-            <div className="text-black text-lg font-medium">Categories</div>
-            <div className="font-medium">14</div>
-            <div>Last 7 days</div>
+            <div className="text-[#F15E2B] text-lg font-medium ">
+              Categories
+            </div>
+            <div className="font-medium">{categoryQuantity ?? 0}</div>
+            <div className="font-normal">Last 7 days</div>
           </div>
           <div className="border" />
           <div className="">
             <div className="text-[#E19133] text-lg font-medium">
-              Total Received
+              Total Products
             </div>
             <div className="flex flex-row gap-x-20">
               <div className="flex flex-col text-start">
                 <div className="font-medium">32</div>
-                <div>Last 7 days</div>
+                <div className="font-normal">Last 7 days</div>
               </div>
               <div className="flex flex-col text-end">
                 <div className="font-medium">25000</div>
@@ -121,12 +133,12 @@ const InventoryScreen = () => {
           <div className="border" />
           <div className="">
             <div className="text-[#845EBC] text-lg font-medium">
-              Total Received
+              Top Selling
             </div>
             <div className="flex flex-row gap-x-20">
               <div className="flex flex-col text-start">
                 <div className="font-medium">32</div>
-                <div>Last 7 days</div>
+                <div className="font-normal">Last 7 days</div>
               </div>
               <div className="flex flex-col text-end">
                 <div className="font-medium">25000</div>
@@ -136,11 +148,11 @@ const InventoryScreen = () => {
           </div>
           <div className="border" />
           <div className="">
-            <div className="text-[#F36960] text-lg font-medium">On the way</div>
+            <div className="text-[#F36960] text-lg font-medium">Low stocks</div>
             <div className="flex flex-row gap-x-20">
               <div className="flex flex-col text-start">
                 <div className="font-medium">32</div>
-                <div>Last 7 days</div>
+                <div className="font-normal">Last 7 days</div>
               </div>
               <div className="flex flex-col text-end">
                 <div className="font-medium">25000</div>
@@ -162,8 +174,9 @@ const InventoryScreen = () => {
               setPage(val.page);
               setPageSize(val.pageSize);
             }}
+            titleButton="Add Product"
             onCreate={() => {
-              window.location.href = "/inventory/add-product";
+              window.location.href = "/inventory/create-product";
             }}
             total={total}
             extraColumn={(item) => (
@@ -194,7 +207,7 @@ const InventoryScreen = () => {
         <ToggleProduct
           visible={isVisibleModalProduct}
           onClose={() => {
-            // setIsVisibleModalProduct(false);
+            setIsVisibleModalProduct(false);
           }}
         />
       </div>

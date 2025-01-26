@@ -154,7 +154,7 @@ const TableComponent = (props: Props) => {
             <Title level={5}>{forms?.title}</Title>
             <div className="flex flex-row gap-x-3">
               <Button className="bg-[#F15E2B] text-white" onClick={onCreate}>
-                {titleButton ?? "Add Product"}
+                {titleButton ?? ""}
               </Button>
               {/* <Button>Filters</Button> */}
               {exportExcel && (

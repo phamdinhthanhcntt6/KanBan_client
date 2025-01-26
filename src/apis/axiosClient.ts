@@ -2,7 +2,9 @@ import axios from "axios";
 import queryString from "query-string";
 import { localDataNames } from "../constant/appInfor";
 
-const baseURL = `http://192.168.1.7:3001`;
+const IPv4Address = `192.168.1.6`;
+
+const baseURL = `http://${IPv4Address}:3001`;
 
 const getAccesstoken = () => {
   const res = localStorage.getItem(localDataNames.authData);

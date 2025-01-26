@@ -26,12 +26,12 @@ const SiderComponent = () => {
       key: "inventory",
       label: <Link to={"/inventory"}>Inventory</Link>,
       icon: <ShoppingCartOutlined />,
-      children: [
-        {
-          key: "add_product",
-          label: <Link to={"/inventory/product"}>Product</Link>,
-        },
-      ],
+      // children: [
+      //   {
+      //     key: "add_product",
+      //     label: <Link to={"/inventory/product"}>Product</Link>,
+      //   },
+      // ],
     },
     {
       key: "category",

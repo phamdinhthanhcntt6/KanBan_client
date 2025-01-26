@@ -78,7 +78,7 @@ const CreateProductScreen = () => {
       ) : (
         <div className="bg-white px-6 py-4 rounded-lg">
           <div className="flex w-full justify-between">
-            <div className="text-xl">Add Product</div>
+            <div className="text-xl">Create product</div>
             <Space>
               <Button
                 onClick={() => {

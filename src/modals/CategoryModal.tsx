@@ -22,7 +22,11 @@ const CategoryModal = (props: Props) => {
 
   const [form] = Form.useForm();
 
-  useEffect(() => {}, [category]);
+  useEffect(() => {
+    if (category) {
+      form.setFieldsValue(category);
+    }
+  }, [category]);
 
   const handleClose = () => {
     onClose();
@@ -65,6 +69,7 @@ const CategoryModal = (props: Props) => {
       closable={!isLoading}
       onClose={handleClose}
       onOk={() => form.submit()}
+      okText={category ? "Update" : "Create"}
       okButtonProps={{
         loading: isLoading,
         disabled: isLoading,

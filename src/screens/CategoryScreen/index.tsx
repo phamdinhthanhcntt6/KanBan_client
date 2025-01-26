@@ -113,6 +113,7 @@ const CategoryScreen = () => {
                 type="text"
                 onClick={() => {
                   setCategorySelected(item);
+                  console.log("======", item);
                   setIsVisibleCategoryModal(true);
                 }}
                 icon={<EditTwoTone twoToneColor="blue" size={18} />}

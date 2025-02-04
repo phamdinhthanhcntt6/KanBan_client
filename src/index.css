@@ -49,3 +49,44 @@ code {
 .tox-statusbar__branding a {
   display: none !important;
 }
+
+.animation1 {
+  animation-name: example !important;
+  font-size: 30px;
+}
+
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  position: relative; /* Cần thiết để định vị phần tử */
+  animation-name: example; /* Bắt buộc: Tên của animation */
+  animation-duration: 2s; /* Bắt buộc: Thời gian animation */
+  animation-delay: 0.5s; /* Không bắt buộc: Độ trễ trước khi bắt đầu */
+  animation-iteration-count: infinite; /* Không bắt buộc: Số lần lặp (infinite hoặc số) */
+  animation-direction: alternate; /* Không bắt buộc: Hướng của animation (normal, reverse, alternate, alternate-reverse) */
+  animation-timing-function: ease-in-out; /* Không bắt buộc: Đường cong tốc độ (ease, linear, ease-in, ease-out, ease-in-out, cubic-bezier()) */
+  animation-fill-mode: forwards; /* Không bắt buộc: Cách hiển thị sau khi kết thúc (none, forwards, backwards, both) */
+  /* Shorthand (viết tắt): */
+  /* animation: example 2s 0.5s infinite alternate ease-in-out forwards; */
+}
+
+@keyframes example {
+  /* Định nghĩa các bước của animation */
+  0% {
+    background-color: red;
+    left: 0px;
+  }
+  30% {
+    background-color: yellow;
+    left: 500px;
+  }
+  60% {
+    background-color: aqua;
+    left: 250px;
+  }
+  100% {
+    background-color: blue;
+    left: 0px;
+  }
+}

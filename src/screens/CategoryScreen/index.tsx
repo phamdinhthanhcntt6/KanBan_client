@@ -1,12 +1,12 @@
+import { DeleteTwoTone, EditTwoTone, EyeOutlined } from "@ant-design/icons";
 import { Button, message, Modal, Space, Spin } from "antd";
 import { useEffect, useState } from "react";
 import handleAPI from "../../apis/handleApi";
+import TableComponent from "../../components/TableComponent";
 import CategoryModal from "../../modals/CategoryModal";
 import { CategoryModel } from "../../models/CategoryModel";
 import { FormModel, TreeModel } from "../../models/FormModel";
 import { getTreeData } from "../../utils/getTreeData";
-import TableComponent from "../../components/TableComponent";
-import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
 
 const { confirm } = Modal;
 
@@ -65,8 +65,9 @@ const CategoryScreen = () => {
 
     setCategories(items);
     setTotal(res.data.total);
-    const value = data.length > 0 ? getTreeData(data, "parentId") : [];
+    const value = data.length > 0 ? getTreeData(data) : [];
     setCategoryOption(value);
+    setCategories(getTreeData(data, true));
   };
 
   const getForm = async () => {
@@ -89,10 +90,9 @@ const CategoryScreen = () => {
   return isLoading ? (
     <Spin />
   ) : (
-    <div className="mt-[10px] bg-white mx-8 rounded-lg h-max">
+    <div className="mt-[10px] bg-white mx-8 rounded-lg h-max w-1/2">
       {forms && (
         <TableComponent
-          index
           size="small"
           forms={forms}
           records={categories}
@@ -107,13 +107,19 @@ const CategoryScreen = () => {
           total={total}
           api={"/category"}
           titleButton="Add Category"
-          extraColumn={(item) => (
+          extraColumn={(item: CategoryModel) => (
             <Space>
               <Button
                 type="text"
                 onClick={() => {
+                  window.location.href = `/category/detail?id=${item._id}&name=${item.slug}`;
+                }}
+                icon={<EyeOutlined className="border-none" />}
+              />
+              <Button
+                type="text"
+                onClick={() => {
                   setCategorySelected(item);
-                  console.log("======", item);
                   setIsVisibleCategoryModal(true);
                 }}
                 icon={<EditTwoTone twoToneColor="blue" size={18} />}

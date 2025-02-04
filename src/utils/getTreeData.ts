@@ -1,28 +1,49 @@
-export const getTreeData = (data: any[], key: string) => {
-  const items: any[] = [];
-  const keys: any[] = [];
+export const getTreeData = (data: any[], isSelect?: boolean) => {
+  const values: any = [];
+  const items: any[] = data.filter((item) => !item.parentId);
+  const newItems = items.map((item) =>
+    isSelect
+      ? {
+          label: item.title,
+          value: item._id,
+          key: item._id,
+        }
+      : { ...item, key: item._id }
+  );
 
-  data.forEach((item) => {
-    if (item[key] && !keys.includes(item[key])) {
-      keys.push(item[key]);
-    }
+  newItems.forEach((item) => {
+    values.push({
+      ...item,
+      children: getChildren(
+        data,
+        isSelect ? item.value : item._id,
+        isSelect ?? false
+      ),
+    });
   });
 
-  data.forEach((item) => {
-    if (item[key]) {
-      const index = items.findIndex((i) => i.value === item[key]);
+  return values;
+};
 
-      const children = data.filter((i) => i[key] === item[key]);
+const getChildren = (data: any[], key: string, isSelect: boolean) => {
+  const items: any = [];
+  const datas = data.filter((item) => item.parentId === key);
 
-      if (index !== -1) {
-        items[index].children = children.map((i) => ({
-          title: i.title,
-          value: i._id,
-        }));
-      }
-    } else {
-      items.push({ title: item.title, value: item._id });
-    }
+  datas.forEach((item) => {
+    items.push(
+      isSelect
+        ? {
+            label: item.title,
+            value: item._id,
+            children: getChildren(data, item._id, isSelect),
+          }
+        : {
+            ...item,
+            key: item._id,
+            children: getChildren(data, item._id, isSelect),
+          }
+    );
   });
+
   return items;
 };

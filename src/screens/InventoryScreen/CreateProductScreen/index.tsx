@@ -18,6 +18,7 @@ import { SelectModel, TreeModel } from "../../../models/FormModel";
 import { replaceName } from "../../../utils/replaceName";
 import { uploadFile } from "../../../utils/uploadFile";
 import { getTreeData } from "../../../utils/getTreeData";
+import { get } from "http";
 
 const CreateProductScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -67,8 +68,7 @@ const CreateProductScreen = () => {
 
     const data = res.data.items;
 
-    const value = data.length > 0 ? getTreeData(data, "parentId") : [];
-    setCategoryOption(value);
+    setCategoryOption(getTreeData(data, true));
   };
 
   return (

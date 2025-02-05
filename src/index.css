@@ -50,6 +50,10 @@ code {
   display: none !important;
 }
 
+.hidden-inp {
+  display: none !important;
+}
+
 .animation1 {
   animation-name: example !important;
   font-size: 30px;

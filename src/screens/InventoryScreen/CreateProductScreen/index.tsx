@@ -1,4 +1,4 @@
-import { CopyOutlined, PlusOutlined } from "@ant-design/icons";
+import { CopyOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { Editor } from "@tinymce/tinymce-react";
 import {
   Button,
@@ -9,35 +9,36 @@ import {
   Select,
   Space,
   Spin,
+  Image,
   TreeSelect,
 } from "antd";
 import { useEffect, useRef, useState } from "react";
 import handleAPI from "../../../apis/handleApi";
 import { CategoryModal } from "../../../modals";
 import { SelectModel, TreeModel } from "../../../models/FormModel";
+import { getTreeData } from "../../../utils/getTreeData";
 import { replaceName } from "../../../utils/replaceName";
 import { uploadFile } from "../../../utils/uploadFile";
-import { getTreeData } from "../../../utils/getTreeData";
-import { get } from "http";
 
 const CreateProductScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [content, setContent] = useState("");
+  const [content, _setContent] = useState("");
   const [supplierOption, setSupplierOption] = useState<SelectModel[]>([]);
   const [categoryOption, setCategoryOption] = useState<TreeModel[]>([]);
   const [fileUrl, setFileUrl] = useState("");
   const [isVisbleAddCategory, setIsVisbleAddCategory] = useState(false);
+  const [isLoadingCreateProduct, setIsLoadingCreateProduct] = useState(false);
+  const [files, setFiles] = useState<any[]>([]);
 
   const editorRef = useRef<any>(null);
+
+  const inputImageRef = useRef<any>(null);
+
   const [form] = Form.useForm();
 
   useEffect(() => {
     getData();
   }, []);
-
-  const handleCreateProduct = async (values: any) => {
-    const content = editorRef.current.getContent();
-  };
 
   const getData = async () => {
     setIsLoading(true);
@@ -48,6 +49,47 @@ const CreateProductScreen = () => {
       message.error(error.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCreateProduct = async (values: any) => {
+    setIsLoadingCreateProduct(true);
+
+    const content = editorRef.current.getContent();
+
+    const data: any = {};
+
+    for (const i in values) {
+      data[i] = values[i] ?? "";
+    }
+
+    data.content = content;
+    data.slug = replaceName(data.title);
+
+    if (files.length > 0) {
+      const urls: string[] = [];
+
+      for (const i in files) {
+        if (files[i].size && files[i].size > 0) {
+          const url = await uploadFile(files[i]);
+          console.log(url);
+          urls.push(url);
+        }
+      }
+
+      data.images = urls;
+    }
+
+    console.log(data);
+
+    try {
+      const res = await handleAPI("/product/create", data, "post");
+      message.success(res.data.message);
+      window.history.back();
+    } catch (error: any) {
+      message.error(error.message);
+    } finally {
+      setIsLoadingCreateProduct(false);
     }
   };
 
@@ -89,6 +131,7 @@ const CreateProductScreen = () => {
                 Cancel
               </Button>
               <Button
+                loading={isLoadingCreateProduct}
                 type="primary"
                 onClick={() => {
                   form.submit();
@@ -100,6 +143,7 @@ const CreateProductScreen = () => {
           </div>
           <Form
             size="middle"
+            disabled={isLoadingCreateProduct}
             form={form}
             onFinish={handleCreateProduct}
             layout="vertical"
@@ -122,7 +166,7 @@ const CreateProductScreen = () => {
                   <Input.TextArea rows={4} showCount maxLength={1000} />
                 </Form.Item>
                 <Editor
-                  disabled={isLoading}
+                  disabled={isLoading || isLoadingCreateProduct}
                   apiKey="43qsfp1ypjtycnuhgct3c0vow2guutz01d4wkh2kzn7mr3lz"
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   initialValue={content !== "" ? content : ""}
@@ -172,6 +216,7 @@ const CreateProductScreen = () => {
                 >
                   <TreeSelect
                     showSearch
+                    multiple
                     treeData={categoryOption}
                     dropdownRender={(menu) => (
                       <div className="">
@@ -225,6 +270,46 @@ const CreateProductScreen = () => {
                     )}
                   />
                 </Form.Item>
+
+                <div className="flex flex-col gap-y-2">
+                  <div className="flex-wrap">
+                    {files.length > 0 && (
+                      <Image.PreviewGroup>
+                        {Object.keys(files).map(
+                          (i) =>
+                            files[parseInt(i)].size &&
+                            files[parseInt(i)].size > 0 && (
+                              <Image
+                                key={i}
+                                src={URL.createObjectURL(files[parseInt(i)])}
+                                width={100}
+                                height={100}
+                              />
+                            )
+                        )}
+                      </Image.PreviewGroup>
+                    )}
+                  </div>
+                  <Button
+                    icon={<UploadOutlined />}
+                    type="dashed"
+                    className="mb-6 w-max"
+                    onClick={() => inputImageRef.current.click()}
+                  >
+                    Upload images
+                  </Button>
+                </div>
+
+                <input
+                  className="hidden-inp"
+                  type="file"
+                  multiple
+                  onChange={(val: any) =>
+                    val.target.files && setFiles(val.target.files)
+                  }
+                  ref={inputImageRef}
+                  accept="image/*"
+                />
 
                 <div className="flex flex-row w-full gap-x-2">
                   <Input

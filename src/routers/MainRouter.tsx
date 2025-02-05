@@ -10,7 +10,6 @@ import ManageStoreScreen from "../screens/ManageStoreScreen";
 import OrderScreen from "../screens/OrderScreen";
 import ReportScreen from "../screens/ReportScreen";
 import SuppliersScreen from "../screens/SupplierScreen";
-import CategoryDetailScreen from "../screens/CategoryScreen/CategoryDetailScreen";
 
 const { Content } = Layout;
 
@@ -31,13 +30,7 @@ const MainRouter = () => {
                   element={<CreateProductScreen />}
                 />
               </Route>
-              <Route>
-                <Route path="/category" element={<CategoryScreen />} />
-                <Route
-                  path="/category/detail"
-                  element={<CategoryDetailScreen />}
-                />
-              </Route>
+              <Route path="/category" element={<CategoryScreen />} />
               <Route path="/report" element={<ReportScreen />} />
               <Route path="/suppliers" element={<SuppliersScreen />} />
               <Route path="/orders" element={<OrderScreen />} />

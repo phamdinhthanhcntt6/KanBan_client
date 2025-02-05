@@ -6,5 +6,4 @@ export interface CategoryModel {
   description: string;
   createAt: string;
   updateAt: string;
-  __v: number;
 }

@@ -4,19 +4,19 @@ import { useEffect, useState } from "react";
 import handleAPI from "../../apis/handleApi";
 import TableComponent from "../../components/TableComponent";
 import { FormModel } from "../../models/FormModel";
-import { OrderModel } from "../../models/OrderModel";
 import ToggleProduct from "../../modals/ToggleProduct";
+import { ProductModel } from "../../models/ProductModel";
 
 const { confirm } = Modal;
 
 const InventoryScreen = () => {
-  const [orders, setOrders] = useState<OrderModel[]>([]);
+  const [products, setProducts] = useState<ProductModel[]>([]);
 
   const [isVisibleModalProduct, setIsVisibleModalProduct] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [orderSelected, setOrderSelected] = useState<OrderModel>();
+  const [productSelected, setProductSelected] = useState<ProductModel>();
 
   const [page, setPage] = useState(1);
 
@@ -30,19 +30,19 @@ const InventoryScreen = () => {
 
   useEffect(() => {
     getData();
-    getProductForm();
   }, []);
 
   useEffect(() => {
-    getOrders();
+    getProducts();
   }, [page, pageSize]);
 
   const getData = async () => {
     setIsLoading(true);
     try {
+      await getProductForm();
+      await getProducts();
       await getCategoryList();
-      await getOrders();
-      await getForm();
+      await getProducts();
     } catch (error: any) {
       message.error(error.message);
     } finally {
@@ -57,14 +57,14 @@ const InventoryScreen = () => {
     setCategoryQuantity(data);
   };
 
-  const getOrders = async () => {
-    const api = `/order?page=${page}&pageSize=${pageSize}`;
+  const getProducts = async () => {
+    const api = `/product?page=${page}&pageSize=${pageSize}`;
     setIsLoading(true);
     try {
       const res = await handleAPI(api);
-      res.data && setOrders(res.data.items);
+      res.data && setProducts(res.data.items);
 
-      const items: OrderModel[] = [];
+      const items: ProductModel[] = [];
 
       res.data.items.forEach((item: any, index: number) =>
         items.push({
@@ -72,7 +72,7 @@ const InventoryScreen = () => {
           ...item,
         })
       );
-      setOrders(items);
+      setProducts(items);
       setTotal(res.data.total);
     } catch (error: any) {
       message.error(error.message);
@@ -83,17 +83,11 @@ const InventoryScreen = () => {
 
   const removeProduct = async (id: string) => {
     try {
-      await handleAPI(`order/remove?id=${id}`, undefined, "delete");
-      getOrders();
+      await handleAPI(`product/remove?id=${id}`, undefined, "delete");
+      getProducts();
     } catch (error: any) {
       message.error(error.message);
     }
-  };
-
-  const getForm = async () => {
-    const api = `/order/get-form`;
-    const res = await handleAPI(api);
-    // res.data && setForms(res.data);
   };
 
   const getProductForm = async () => {
@@ -121,7 +115,7 @@ const InventoryScreen = () => {
             </div>
             <div className="flex flex-row gap-x-20">
               <div className="flex flex-col text-start">
-                <div className="font-medium">32</div>
+                <div className="font-medium">{products.length}</div>
                 <div className="font-normal">Last 7 days</div>
               </div>
               <div className="flex flex-col text-end">
@@ -165,11 +159,11 @@ const InventoryScreen = () => {
       <div className="mt-[10px] bg-white mx-8 rounded-lg h-max">
         {forms && (
           <TableComponent
-            api="/order"
+            api="/product"
             loading={isLoading}
             size="small"
             forms={forms}
-            records={orders}
+            records={products}
             onPageChange={(val) => {
               setPage(val.page);
               setPageSize(val.pageSize);
@@ -184,7 +178,7 @@ const InventoryScreen = () => {
                 <Button
                   type="text"
                   onClick={() => {
-                    setOrderSelected(item);
+                    setProductSelected(item);
                     setIsVisibleModalProduct(true);
                   }}
                   icon={<EditTwoTone twoToneColor="blue" size={18} />}
@@ -204,12 +198,12 @@ const InventoryScreen = () => {
             )}
           />
         )}
-        <ToggleProduct
+        {/* <ToggleProduct
           visible={isVisibleModalProduct}
           onClose={() => {
             setIsVisibleModalProduct(false);
           }}
-        />
+        /> */}
       </div>
     </div>
   );

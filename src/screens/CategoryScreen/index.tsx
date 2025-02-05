@@ -65,7 +65,7 @@ const CategoryScreen = () => {
 
     setCategories(items);
     setTotal(res.data.total);
-    const value = data.length > 0 ? getTreeData(data) : [];
+    const value = data.length > 0 ? getTreeData(data, true) : [];
     setCategoryOption(value);
     setCategories(getTreeData(data, true));
   };
@@ -109,13 +109,13 @@ const CategoryScreen = () => {
           titleButton="Add Category"
           extraColumn={(item: CategoryModel) => (
             <Space>
-              <Button
+              {/* <Button
                 type="text"
                 onClick={() => {
                   window.location.href = `/category/detail?id=${item._id}&name=${item.slug}`;
                 }}
                 icon={<EyeOutlined className="border-none" />}
-              />
+              /> */}
               <Button
                 type="text"
                 onClick={() => {

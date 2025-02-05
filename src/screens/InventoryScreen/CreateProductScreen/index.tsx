@@ -72,15 +72,12 @@ const CreateProductScreen = () => {
       for (const i in files) {
         if (files[i].size && files[i].size > 0) {
           const url = await uploadFile(files[i]);
-          console.log(url);
           urls.push(url);
         }
       }
 
       data.images = urls;
     }
-
-    console.log(data);
 
     try {
       const res = await handleAPI("/product/create", data, "post");
@@ -205,7 +202,7 @@ const CreateProductScreen = () => {
               </div>
               <div className="w-1/3">
                 <Form.Item
-                  name={"category"}
+                  name={"categories"}
                   label="Category"
                   rules={[
                     {
@@ -293,7 +290,7 @@ const CreateProductScreen = () => {
                   <Button
                     icon={<UploadOutlined />}
                     type="dashed"
-                    className="mb-6 w-max"
+                    className="mb-7 w-max"
                     onClick={() => inputImageRef.current.click()}
                   >
                     Upload images

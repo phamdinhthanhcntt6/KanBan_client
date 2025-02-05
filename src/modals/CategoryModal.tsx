@@ -10,7 +10,7 @@ interface Props {
   onClose: () => void;
   onFinish: (val: any) => void;
   values: TreeModel[];
-  category?: CategoryModel;
+  category?: string;
 }
 
 const CategoryModal = (props: Props) => {
@@ -24,7 +24,7 @@ const CategoryModal = (props: Props) => {
 
   useEffect(() => {
     if (category) {
-      form.setFieldsValue(category);
+      getCategoryDetail(category);
     }
   }, [category]);
 
@@ -33,11 +33,15 @@ const CategoryModal = (props: Props) => {
     form.resetFields();
   };
 
+  const getCategoryDetail = async (id: string) => {
+    const api = `/category/detail?id=${id}`;
+    const res = await handleAPI(api);
+    form.setFieldsValue(res.data);
+  };
+
   const handleSubmit = async (values: any) => {
     setIsLoading(true);
-    const api = `/category/${
-      category ? `update?id=${category._id}` : `create`
-    }`;
+    const api = `/category/${category ? `update?id=${category}` : `create`}`;
 
     const data: any = {};
 

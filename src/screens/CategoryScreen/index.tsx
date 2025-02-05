@@ -17,7 +17,7 @@ const CategoryScreen = () => {
 
   const [categories, setCategories] = useState<CategoryModel[]>([]);
 
-  const [categorySelected, setCategorySelected] = useState<CategoryModel>();
+  const [categorySelected, setCategorySelected] = useState<string>("");
 
   const [forms, setForms] = useState<FormModel>();
 
@@ -107,19 +107,19 @@ const CategoryScreen = () => {
           total={total}
           api={"/category"}
           titleButton="Add Category"
-          extraColumn={(item: CategoryModel) => (
+          extraColumn={(item) => (
             <Space>
-              {/* <Button
-                type="text"
-                onClick={() => {
-                  window.location.href = `/category/detail?id=${item._id}&name=${item.slug}`;
-                }}
-                icon={<EyeOutlined className="border-none" />}
-              /> */}
               <Button
                 type="text"
                 onClick={() => {
-                  setCategorySelected(item);
+                  window.location.href = `/category/detail/id=${item.value}`;
+                }}
+                icon={<EyeOutlined className="border-none" />}
+              />
+              <Button
+                type="text"
+                onClick={() => {
+                  setCategorySelected(item.value);
                   setIsVisibleCategoryModal(true);
                 }}
                 icon={<EditTwoTone twoToneColor="blue" size={18} />}
@@ -143,7 +143,7 @@ const CategoryScreen = () => {
         visible={isVisibleCategoryModal}
         onClose={() => {
           categorySelected && getCategoryList();
-          setCategorySelected(undefined);
+          setCategorySelected("");
           setIsVisibleCategoryModal(false);
         }}
         onFinish={() => {

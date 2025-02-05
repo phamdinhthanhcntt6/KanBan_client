@@ -1,11 +1,11 @@
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
-import { Button, message, Modal, Space } from "antd";
+import { Avatar, Button, message, Modal, Space } from "antd";
+import { ColumnProps } from "antd/es/table";
 import { useEffect, useState } from "react";
 import handleAPI from "../../apis/handleApi";
 import TableComponent from "../../components/TableComponent";
-import { FormModel } from "../../models/FormModel";
-import ToggleProduct from "../../modals/ToggleProduct";
 import { ProductModel } from "../../models/ProductModel";
+import CategoryNameComponent from "../../components/CategoryNameComponent";
 
 const { confirm } = Modal;
 
@@ -24,8 +24,6 @@ const InventoryScreen = () => {
 
   const [total, setTotal] = useState<number>(10);
 
-  const [forms, setForms] = useState<FormModel>();
-
   const [categoryQuantity, setCategoryQuantity] = useState<number>(0);
 
   useEffect(() => {
@@ -39,7 +37,6 @@ const InventoryScreen = () => {
   const getData = async () => {
     setIsLoading(true);
     try {
-      await getProductForm();
       await getProducts();
       await getCategoryList();
       await getProducts();
@@ -90,11 +87,51 @@ const InventoryScreen = () => {
     }
   };
 
-  const getProductForm = async () => {
-    const api = `/product/get-form`;
-    const res = await handleAPI(api);
-    res.data && setForms(res.data);
-  };
+  const columns: ColumnProps<ProductModel>[] = [
+    {
+      key: "title",
+      dataIndex: "title",
+      title: "Title",
+    },
+    {
+      key: "description",
+      dataIndex: "description",
+      title: "Description",
+    },
+    {
+      key: "categories",
+      dataIndex: "categories",
+      title: "Categories",
+      render: (categories: string[]) => (
+        <div className="flex-wrap">
+          {categories.map((item: any, index) => (
+            <CategoryNameComponent id={item} key={index} />
+          ))}
+        </div>
+      ),
+    },
+    {
+      key: "supplier",
+      dataIndex: "supplier",
+      title: "Supplier",
+    },
+    {
+      key: "images",
+      dataIndex: "images",
+      title: "Images",
+      render: (image: string[]) =>
+        image &&
+        image.length > 0 && (
+          <Space>
+            <Avatar.Group shape="square">
+              {image.map((item, index) => (
+                <Avatar src={item} key={index} size={50} />
+              ))}
+            </Avatar.Group>
+          </Space>
+        ),
+    },
+  ];
 
   return (
     <div className="flex flex-col">
@@ -157,53 +194,45 @@ const InventoryScreen = () => {
         </div>
       </div>
       <div className="mt-[10px] bg-white mx-8 rounded-lg h-max">
-        {forms && (
-          <TableComponent
-            api="/product"
-            loading={isLoading}
-            size="small"
-            forms={forms}
-            records={products}
-            onPageChange={(val) => {
-              setPage(val.page);
-              setPageSize(val.pageSize);
-            }}
-            titleButton="Add Product"
-            onCreate={() => {
-              window.location.href = "/inventory/create-product";
-            }}
-            total={total}
-            extraColumn={(item) => (
-              <Space>
-                <Button
-                  type="text"
-                  onClick={() => {
-                    setProductSelected(item);
-                    setIsVisibleModalProduct(true);
-                  }}
-                  icon={<EditTwoTone twoToneColor="blue" size={18} />}
-                />
-                <Button
-                  onClick={() =>
-                    confirm({
-                      title: "Comfirm",
-                      content: "Are you sure you want to remove this product?",
-                      onOk: () => removeProduct(item._id),
-                    })
-                  }
-                  type="text"
-                  icon={<DeleteTwoTone twoToneColor="#F15E2B" size={18} />}
-                />
-              </Space>
-            )}
-          />
-        )}
-        {/* <ToggleProduct
-          visible={isVisibleModalProduct}
-          onClose={() => {
-            setIsVisibleModalProduct(false);
+        <TableComponent
+          api="/product"
+          loading={isLoading}
+          size="small"
+          column={columns}
+          records={products}
+          onPageChange={(val) => {
+            setPage(val.page);
+            setPageSize(val.pageSize);
           }}
-        /> */}
+          titleButton="Add Product"
+          onCreate={() => {
+            window.location.href = "/inventory/create-product";
+          }}
+          total={total}
+          extraColumn={(item) => (
+            <Space>
+              <Button
+                type="text"
+                onClick={() => {
+                  setProductSelected(item);
+                  setIsVisibleModalProduct(true);
+                }}
+                icon={<EditTwoTone twoToneColor="blue" size={18} />}
+              />
+              <Button
+                onClick={() =>
+                  confirm({
+                    title: "Comfirm",
+                    content: "Are you sure you want to remove this product?",
+                    onOk: () => removeProduct(item._id),
+                  })
+                }
+                type="text"
+                icon={<DeleteTwoTone twoToneColor="#F15E2B" size={18} />}
+              />
+            </Space>
+          )}
+        />
       </div>
     </div>
   );

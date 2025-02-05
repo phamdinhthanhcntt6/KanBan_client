@@ -6,7 +6,7 @@ import { Resizable } from "re-resizable";
 import { ExportModal } from "../modals";
 
 interface Props {
-  forms: FormModel;
+  forms?: FormModel;
   loading?: boolean;
   records: any[];
   onPageChange: (val: { page: number; pageSize: number }) => void;
@@ -19,6 +19,7 @@ interface Props {
   index?: boolean;
   exportExcel?: boolean;
   titleButton?: string;
+  column?: ColumnProps<any>[];
 }
 
 const { Title } = Typography;
@@ -38,6 +39,7 @@ const TableComponent = (props: Props) => {
     index,
     exportExcel,
     titleButton,
+    column,
   } = props;
 
   const [pageInfo, setPageInfo] = useState<{
@@ -148,7 +150,7 @@ const TableComponent = (props: Props) => {
         bordered
         loading={loading}
         dataSource={records}
-        columns={columns}
+        columns={forms ? columns : column}
         title={() => (
           <div className="flex flex-row justify-between">
             <Title level={5}>{forms?.title}</Title>

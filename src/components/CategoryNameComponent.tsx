@@ -3,6 +3,7 @@ import handleAPI from "../apis/handleApi";
 import { CategoryModel } from "../models/CategoryModel";
 import { Tag } from "antd";
 import { Link } from "react-router-dom";
+import { tagColor } from "../constant/colors";
 
 interface Props {
   id: string;
@@ -29,7 +30,9 @@ const CategoryNameComponent = (props: Props) => {
 
   return (
     <Link to={`/category/detail/id=${id}`}>
-      <Tag>{category?.title}</Tag>
+      <Tag color={tagColor[Math.floor(Math.random() * tagColor.length)]}>
+        {category?.title}
+      </Tag>
     </Link>
   );
 };

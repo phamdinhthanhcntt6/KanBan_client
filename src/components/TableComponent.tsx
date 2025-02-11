@@ -158,7 +158,6 @@ const TableComponent = (props: Props) => {
               <Button className="bg-[#F15E2B] text-white" onClick={onCreate}>
                 {titleButton ?? ""}
               </Button>
-              {/* <Button>Filters</Button> */}
               {exportExcel && (
                 <Button onClick={() => setIsVisible(true)}>Export</Button>
               )}

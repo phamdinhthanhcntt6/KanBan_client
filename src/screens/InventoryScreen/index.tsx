@@ -1,26 +1,26 @@
-import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
-import { Avatar, Button, message, Modal, Space } from "antd";
+import { PlusCircleTwoTone } from "@ant-design/icons";
+import { Avatar, Button, message, Space } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { useEffect, useState } from "react";
 import handleAPI from "../../apis/handleApi";
-import TableComponent from "../../components/TableComponent";
-import { ProductModel } from "../../models/ProductModel";
 import CategoryNameComponent from "../../components/CategoryNameComponent";
-
-const { confirm } = Modal;
+import TableComponent from "../../components/TableComponent";
+import { SubProductModal } from "../../modals";
+import { ProductModel } from "../../models/ProductModel";
 
 const InventoryScreen = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
 
-  const [isVisibleModalProduct, setIsVisibleModalProduct] = useState(false);
+  const [isVisibleModalProduct, setIsVisibleModalProduct] =
+    useState<boolean>(false);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [productSelected, setProductSelected] = useState<ProductModel>();
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(1);
 
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const [total, setTotal] = useState<number>(10);
 
@@ -50,8 +50,8 @@ const InventoryScreen = () => {
   const getCategoryList = async () => {
     const api = `/category`;
     const res = await handleAPI(api);
-    const data = res.data.items.length;
-    setCategoryQuantity(data);
+    const quantity = res.data.items.length;
+    setCategoryQuantity(quantity);
   };
 
   const getProducts = async () => {
@@ -92,6 +92,7 @@ const InventoryScreen = () => {
       key: "title",
       dataIndex: "title",
       title: "Title",
+      fixed: "left",
     },
     {
       key: "description",
@@ -130,6 +131,27 @@ const InventoryScreen = () => {
             </Avatar.Group>
           </Space>
         ),
+    },
+    {
+      key: "action",
+      title: "",
+      dataIndex: "",
+      width: 50,
+      align: "center",
+      fixed: "right",
+      render: (item: ProductModel) => (
+        <Space className="w-max flex flex-row">
+          <Button
+            type="text"
+            onClick={() => {
+              setProductSelected(item);
+              setIsVisibleModalProduct(true);
+            }}
+          >
+            <PlusCircleTwoTone />
+          </Button>
+        </Space>
+      ),
     },
   ];
 
@@ -209,31 +231,16 @@ const InventoryScreen = () => {
             window.location.href = "/inventory/create-product";
           }}
           total={total}
-          extraColumn={(item) => (
-            <Space>
-              <Button
-                type="text"
-                onClick={() => {
-                  setProductSelected(item);
-                  setIsVisibleModalProduct(true);
-                }}
-                icon={<EditTwoTone twoToneColor="blue" size={18} />}
-              />
-              <Button
-                onClick={() =>
-                  confirm({
-                    title: "Comfirm",
-                    content: "Are you sure you want to remove this product?",
-                    onOk: () => removeProduct(item._id),
-                  })
-                }
-                type="text"
-                icon={<DeleteTwoTone twoToneColor="#F15E2B" size={18} />}
-              />
-            </Space>
-          )}
         />
       </div>
+      <SubProductModal
+        isVisible={isVisibleModalProduct}
+        onClose={() => {
+          setProductSelected(undefined);
+          setIsVisibleModalProduct(false);
+        }}
+        product={productSelected}
+      />
     </div>
   );
 };

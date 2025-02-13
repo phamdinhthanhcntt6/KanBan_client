@@ -7,6 +7,7 @@ import CategoryModal from "../../modals/CategoryModal";
 import { CategoryModel } from "../../models/CategoryModel";
 import { FormModel, TreeModel } from "../../models/FormModel";
 import { getTreeData } from "../../utils/getTreeData";
+import { replaceName } from "../../utils/replaceName";
 
 const { confirm } = Modal;
 
@@ -109,10 +110,13 @@ const CategoryScreen = () => {
           titleButton="Add Category"
           extraColumn={(item) => (
             <Space>
+              <>{console.log("slug:=====", item)}</>
               <Button
                 type="text"
                 onClick={() => {
-                  window.location.href = `/category/detail/id=${item.value}`;
+                  window.location.href = `/category/detail/${replaceName(
+                    item.label
+                  )}?id=${item.value}`;
                 }}
                 icon={<EyeOutlined className="border-none" />}
               />

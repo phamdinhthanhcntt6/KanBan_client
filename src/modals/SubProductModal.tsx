@@ -13,11 +13,11 @@ import {
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useState } from "react";
-import { ProductModel } from "../models/ProductModel";
-import { uploadFile } from "../utils/uploadFile";
-import { getBase64 } from "../utils/getBase64";
 import handleAPI from "../apis/handleApi";
+import { ProductModel } from "../models/ProductModel";
 import { SubProductModel } from "../models/SubProductModel";
+import { getBase64 } from "../utils/getBase64";
+import { uploadFile } from "../utils/uploadFile";
 
 interface Props {
   isVisible: boolean;

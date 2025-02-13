@@ -1,14 +1,20 @@
-import { PlusCircleTwoTone } from "@ant-design/icons";
-import { Avatar, Button, message, Space, Tag } from "antd";
+import {
+  DeleteTwoTone,
+  EditTwoTone,
+  PlusCircleTwoTone,
+} from "@ant-design/icons";
+import { Avatar, Button, message, Modal, Space, Tag, Tooltip } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import handleAPI from "../../apis/handleApi";
 import DisplayNameComponent from "../../components/DisplayNameComponent";
 import TableComponent from "../../components/TableComponent";
 import { SubProductModal } from "../../modals";
 import { ProductModel } from "../../models/ProductModel";
 import { SubProductModel } from "../../models/SubProductModel";
-import { Link } from "react-router-dom";
+
+const { confirm } = Modal;
 
 const InventoryScreen = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -93,9 +99,11 @@ const InventoryScreen = () => {
 
     data.length > 0 && data.forEach((item) => ranges.push(item.price));
 
-    return ranges.length > 1
-      ? `${Math.min(...ranges)} - ${Math.max(...ranges)}`
-      : `${ranges[0]}`;
+    return data.length > 0
+      ? ranges.length > 1
+        ? `${Math.min(...ranges)} - ${Math.max(...ranges)}`
+        : `${ranges[0]}`
+      : "0";
   };
 
   const columns: ColumnProps<ProductModel>[] = [
@@ -105,7 +113,7 @@ const InventoryScreen = () => {
       title: "Title",
       fixed: "left",
       render: (product: ProductModel) => (
-        <Link to={`/inventory/detail?id=${product._id}`}>
+        <Link to={`/inventory/detail/${product.slug}?id=${product._id}`}>
           <Button type="link">{product.title}</Button>
         </Link>
       ),
@@ -132,9 +140,7 @@ const InventoryScreen = () => {
       key: "supplier",
       dataIndex: "supplier",
       title: "Supplier",
-      render: (items: string) => (
-        <DisplayNameComponent type="supplier" id={items} />
-      ),
+      render: (id: string) => <DisplayNameComponent type="supplier" id={id} />,
     },
     {
       key: "images",
@@ -161,7 +167,7 @@ const InventoryScreen = () => {
       render: (items: SubProductModel[]) => (
         <Space>
           {items.length > 0 &&
-            items.map((item, index: number) => (
+            items.map((item: SubProductModel, index: number) => (
               <div
                 className="rounded-full h-6 w-6"
                 key={index}
@@ -180,7 +186,7 @@ const InventoryScreen = () => {
       render: (items: SubProductModel[]) => (
         <Space>
           {items.length > 0 &&
-            items.map((item) => (
+            items.map((item: SubProductModel) => (
               <Tag key={`size${item.size}`}>{item.size}</Tag>
             ))}
         </Space>
@@ -190,13 +196,12 @@ const InventoryScreen = () => {
       key: "price",
       dataIndex: "subItems",
       title: "Price",
-      render: (items: SubProductModel[]) => <div>{getRangePrice(items)}</div>,
+      render: (items: SubProductModel[]) => <>{getRangePrice(items)}</>,
     },
     {
       key: "stocks",
       dataIndex: "subItems",
       title: "Stocks",
-      align: "right",
       render: (items: SubProductModel[]) => (
         <>{items.reduce((a, b) => a + b.quantity, 0)}</>
       ),
@@ -210,15 +215,36 @@ const InventoryScreen = () => {
       fixed: "right",
       render: (item: ProductModel) => (
         <Space className="w-max flex flex-row" key={item._id}>
-          <Button
-            type="text"
-            onClick={() => {
-              setProductSelected(item);
-              setIsVisibleModalProduct(true);
-            }}
-          >
-            <PlusCircleTwoTone />
-          </Button>
+          <Tooltip key={"buttonCreate"} title="Create sub product">
+            <Button
+              type="text"
+              onClick={() => {
+                setProductSelected(item);
+                setIsVisibleModalProduct(true);
+              }}
+            >
+              <PlusCircleTwoTone />
+            </Button>
+          </Tooltip>
+          <Tooltip key={"buttonUpdate"} title="Update product">
+            <Button type="text" onClick={() => {}}>
+              <EditTwoTone twoToneColor="blue" />
+            </Button>
+          </Tooltip>
+          <Tooltip key={"buttonRemove"} title="Remove product">
+            <Button
+              type="text"
+              onClick={() => {
+                confirm({
+                  title: "Confirm",
+                  content: "Are you sure you want to remove this product?",
+                  onOk: () => removeProduct(item._id),
+                });
+              }}
+            >
+              <DeleteTwoTone twoToneColor="#F15E2B" />
+            </Button>
+          </Tooltip>
         </Space>
       ),
     },
@@ -308,9 +334,8 @@ const InventoryScreen = () => {
           setProductSelected(undefined);
           setIsVisibleModalProduct(false);
         }}
-        onCreate={(val) => {
-          console.log("=====", val);
-          getProducts();
+        onCreate={async () => {
+          await getProducts();
         }}
         product={productSelected}
       />

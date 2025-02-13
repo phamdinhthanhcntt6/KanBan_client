@@ -32,14 +32,14 @@ const MainRouter = () => {
                   element={<CreateProductScreen />}
                 />
                 <Route
-                  path="/inventory/detail/:id"
+                  path="/inventory/detail/:slug"
                   element={<ProductDetailScreen />}
                 />
               </Route>
               <Route>
                 <Route path="/category" element={<CategoryScreen />} />
                 <Route
-                  path="/category/detail/:id"
+                  path="/category/detail/:slug"
                   element={<CategoryDetailScreen />}
                 />
               </Route>

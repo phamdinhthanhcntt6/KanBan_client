@@ -1,3 +1,5 @@
+import { SubProductModel } from "./SubProductModel";
+
 export interface ProductModel {
   _id: string;
   title: string;
@@ -8,4 +10,5 @@ export interface ProductModel {
   isDeleted: boolean;
   createAt: string;
   updateAt: string;
+  subItems: SubProductModel[];
 }

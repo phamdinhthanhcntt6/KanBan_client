@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import handleAPI from "../apis/handleApi";
 import { TreeModel } from "../models/FormModel";
 import { replaceName } from "../utils/replaceName";
-import { CategoryModel } from "../models/CategoryModel";
 
 interface Props {
   visible: boolean;

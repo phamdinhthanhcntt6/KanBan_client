@@ -1,11 +1,12 @@
 export interface SubProductModel {
+  productId: string;
+  size: string;
+  color: string;
+  price: number;
+  quantity: number;
+  images: any[];
   _id: string;
-  title: string;
-  description: string;
-  supplier: string;
-  categories: string[];
-  slug: string;
-  isDeleted: boolean;
-  createAt: string;
-  updateAt: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }

@@ -1,12 +1,14 @@
 import { PlusCircleTwoTone } from "@ant-design/icons";
-import { Avatar, Button, message, Space } from "antd";
+import { Avatar, Button, message, Space, Tag } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { useEffect, useState } from "react";
 import handleAPI from "../../apis/handleApi";
-import CategoryNameComponent from "../../components/CategoryNameComponent";
+import DisplayNameComponent from "../../components/DisplayNameComponent";
 import TableComponent from "../../components/TableComponent";
 import { SubProductModal } from "../../modals";
 import { ProductModel } from "../../models/ProductModel";
+import { SubProductModel } from "../../models/SubProductModel";
+import { Link } from "react-router-dom";
 
 const InventoryScreen = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -59,11 +61,10 @@ const InventoryScreen = () => {
     setIsLoading(true);
     try {
       const res = await handleAPI(api);
-      res.data && setProducts(res.data.items);
 
       const items: ProductModel[] = [];
 
-      res.data.items.forEach((item: any, index: number) =>
+      res.data.forEach((item: any, index: number) =>
         items.push({
           index: (page - 1) * pageSize + index + 1,
           ...item,
@@ -87,12 +88,27 @@ const InventoryScreen = () => {
     }
   };
 
+  const getRangePrice = (data: SubProductModel[]) => {
+    const ranges: number[] = [];
+
+    data.length > 0 && data.forEach((item) => ranges.push(item.price));
+
+    return ranges.length > 1
+      ? `${Math.min(...ranges)} - ${Math.max(...ranges)}`
+      : `${ranges[0]}`;
+  };
+
   const columns: ColumnProps<ProductModel>[] = [
     {
       key: "title",
-      dataIndex: "title",
+      dataIndex: "",
       title: "Title",
       fixed: "left",
+      render: (product: ProductModel) => (
+        <Link to={`/inventory/detail?id=${product._id}`}>
+          <Button type="link">{product.title}</Button>
+        </Link>
+      ),
     },
     {
       key: "description",
@@ -105,9 +121,10 @@ const InventoryScreen = () => {
       title: "Categories",
       render: (categories: string[]) => (
         <div className="flex-wrap">
-          {categories.map((item: any, index) => (
-            <CategoryNameComponent id={item} key={index} />
-          ))}
+          {categories &&
+            categories.map((item: any, index: number) => (
+              <DisplayNameComponent id={item} type="category" key={index} />
+            ))}
         </div>
       ),
     },
@@ -115,6 +132,9 @@ const InventoryScreen = () => {
       key: "supplier",
       dataIndex: "supplier",
       title: "Supplier",
+      render: (items: string) => (
+        <DisplayNameComponent type="supplier" id={items} />
+      ),
     },
     {
       key: "images",
@@ -125,12 +145,61 @@ const InventoryScreen = () => {
         image.length > 0 && (
           <Space>
             <Avatar.Group shape="square">
-              {image.map((item, index) => (
-                <Avatar src={item} key={index} size={50} />
+              {image.map((item, index: number) => (
+                <>
+                  <Avatar src={item} key={index} size={50} />
+                </>
               ))}
             </Avatar.Group>
           </Space>
         ),
+    },
+    {
+      key: "color",
+      dataIndex: "subItems",
+      title: "Color",
+      render: (items: SubProductModel[]) => (
+        <Space>
+          {items.length > 0 &&
+            items.map((item, index: number) => (
+              <div
+                className="rounded-full h-6 w-6"
+                key={index}
+                style={{
+                  background: item.color,
+                }}
+              />
+            ))}
+        </Space>
+      ),
+    },
+    {
+      key: "size",
+      dataIndex: "subItems",
+      title: "Size",
+      render: (items: SubProductModel[]) => (
+        <Space>
+          {items.length > 0 &&
+            items.map((item) => (
+              <Tag key={`size${item.size}`}>{item.size}</Tag>
+            ))}
+        </Space>
+      ),
+    },
+    {
+      key: "price",
+      dataIndex: "subItems",
+      title: "Price",
+      render: (items: SubProductModel[]) => <div>{getRangePrice(items)}</div>,
+    },
+    {
+      key: "stocks",
+      dataIndex: "subItems",
+      title: "Stocks",
+      align: "right",
+      render: (items: SubProductModel[]) => (
+        <>{items.reduce((a, b) => a + b.quantity, 0)}</>
+      ),
     },
     {
       key: "action",
@@ -140,7 +209,7 @@ const InventoryScreen = () => {
       align: "center",
       fixed: "right",
       render: (item: ProductModel) => (
-        <Space className="w-max flex flex-row">
+        <Space className="w-max flex flex-row" key={item._id}>
           <Button
             type="text"
             onClick={() => {
@@ -238,6 +307,10 @@ const InventoryScreen = () => {
         onClose={() => {
           setProductSelected(undefined);
           setIsVisibleModalProduct(false);
+        }}
+        onCreate={(val) => {
+          console.log("=====", val);
+          getProducts();
         }}
         product={productSelected}
       />

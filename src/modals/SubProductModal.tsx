@@ -16,17 +16,20 @@ import { useState } from "react";
 import { ProductModel } from "../models/ProductModel";
 import { uploadFile } from "../utils/uploadFile";
 import { getBase64 } from "../utils/getBase64";
+import handleAPI from "../apis/handleApi";
+import { SubProductModel } from "../models/SubProductModel";
 
 interface Props {
   isVisible: boolean;
   onClose: () => void;
   product?: ProductModel;
+  onCreate: (val: SubProductModel) => void;
 }
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const SubProductModal = (props: Props) => {
-  const { isVisible, onClose, product } = props;
+  const { isVisible, onClose, product, onCreate } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -39,8 +42,6 @@ const SubProductModal = (props: Props) => {
   const [form] = useForm();
 
   const handleCreateSubProduct = async (values: any) => {
-    setIsLoading(true);
-
     if (product) {
       const data: any = {};
 
@@ -61,9 +62,20 @@ const SubProductModal = (props: Props) => {
         data.images = urls;
       }
 
-      console.log("========", data);
+      if (data.color) {
+        data.color =
+          typeof data.color === "string"
+            ? data.color
+            : data.color.toHexString();
+      }
+
+      setIsLoading(true);
 
       try {
+        const api = `/sub-product/create`;
+        const res = await handleAPI(api, data, "post");
+        onCreate(res.data);
+        handleCancel();
       } catch (error: any) {
         console.log(error.message);
       } finally {

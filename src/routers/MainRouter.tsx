@@ -11,6 +11,7 @@ import OrderScreen from "../screens/OrderScreen";
 import ReportScreen from "../screens/ReportScreen";
 import SuppliersScreen from "../screens/SupplierScreen";
 import CategoryDetailScreen from "../screens/CategoryScreen/CategoryDetailScreen";
+import ProductDetailScreen from "../screens/InventoryScreen/ProductDetailScreen";
 
 const { Content } = Layout;
 
@@ -29,6 +30,10 @@ const MainRouter = () => {
                 <Route
                   path="/inventory/create-product"
                   element={<CreateProductScreen />}
+                />
+                <Route
+                  path="/inventory/detail/:id"
+                  element={<ProductDetailScreen />}
                 />
               </Route>
               <Route>

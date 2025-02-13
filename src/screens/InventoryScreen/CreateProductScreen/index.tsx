@@ -22,12 +22,19 @@ import { uploadFile } from "../../../utils/uploadFile";
 
 const CreateProductScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
+
   const [content, _setContent] = useState("");
+
   const [supplierOption, setSupplierOption] = useState<SelectModel[]>([]);
+
   const [categoryOption, setCategoryOption] = useState<TreeModel[]>([]);
+
   const [fileUrl, setFileUrl] = useState("");
+
   const [isVisbleAddCategory, setIsVisbleAddCategory] = useState(false);
+
   const [isLoadingCreateProduct, setIsLoadingCreateProduct] = useState(false);
+
   const [files, setFiles] = useState<any[]>([]);
 
   const editorRef = useRef<any>(null);

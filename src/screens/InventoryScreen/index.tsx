@@ -6,7 +6,7 @@ import {
 import { Avatar, Button, message, Modal, Space, Tag, Tooltip } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import handleAPI from "../../apis/handleApi";
 import DisplayNameComponent from "../../components/DisplayNameComponent";
 import TableComponent from "../../components/TableComponent";
@@ -33,6 +33,10 @@ const InventoryScreen = () => {
   const [total, setTotal] = useState<number>(10);
 
   const [categoryQuantity, setCategoryQuantity] = useState<number>(0);
+
+  const [images, setImages] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     getData();
@@ -88,7 +92,16 @@ const InventoryScreen = () => {
   const removeProduct = async (id: string) => {
     try {
       await handleAPI(`product/remove?id=${id}`, undefined, "delete");
-      getProducts();
+      // getProducts();
+
+      const items = [...products];
+      const index = items.findIndex((element) => element._id === id);
+
+      index !== -1 && items.splice(index, 1);
+
+      setProducts(items);
+
+      message.success("Delete product successfully!");
     } catch (error: any) {
       message.error(error.message);
     }
@@ -164,20 +177,28 @@ const InventoryScreen = () => {
       key: "color",
       dataIndex: "subItems",
       title: "Color",
-      render: (items: SubProductModel[]) => (
-        <Space>
-          {items.length > 0 &&
-            items.map((item: SubProductModel, index: number) => (
-              <div
-                className="rounded-full h-6 w-6"
-                key={index}
-                style={{
-                  background: item.color,
-                }}
-              />
-            ))}
-        </Space>
-      ),
+      render: (items: SubProductModel[]) => {
+        const colors: string[] = [];
+
+        items.forEach(
+          (item) => !colors.includes(item.color) && colors.push(item.color)
+        );
+
+        return (
+          <Space>
+            {colors.length > 0 &&
+              colors.map((item, index: number) => (
+                <div
+                  className="rounded-full h-6 w-6"
+                  key={`color${index}`}
+                  style={{
+                    background: item,
+                  }}
+                />
+              ))}
+          </Space>
+        );
+      },
     },
     {
       key: "size",
@@ -227,7 +248,12 @@ const InventoryScreen = () => {
             </Button>
           </Tooltip>
           <Tooltip key={"buttonUpdate"} title="Update product">
-            <Button type="text" onClick={() => {}}>
+            <Button
+              type="text"
+              onClick={() => {
+                navigate(`/inventory/create-product?id=${item._id}`);
+              }}
+            >
               <EditTwoTone twoToneColor="blue" />
             </Button>
           </Tooltip>
@@ -323,7 +349,7 @@ const InventoryScreen = () => {
           }}
           titleButton="Add Product"
           onCreate={() => {
-            window.location.href = "/inventory/create-product";
+            navigate("/inventory/create-product");
           }}
           total={total}
         />

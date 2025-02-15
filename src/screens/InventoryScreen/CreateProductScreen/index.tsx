@@ -19,11 +19,12 @@ import { SelectModel, TreeModel } from "../../../models/FormModel";
 import { getTreeData } from "../../../utils/getTreeData";
 import { replaceName } from "../../../utils/replaceName";
 import { uploadFile } from "../../../utils/uploadFile";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const CreateProductScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const [content, _setContent] = useState("");
+  const [content, setContent] = useState("");
 
   const [supplierOption, setSupplierOption] = useState<SelectModel[]>([]);
 
@@ -43,9 +44,19 @@ const CreateProductScreen = () => {
 
   const [form] = Form.useForm();
 
+  const navigate = useNavigate();
+
+  const [searchParam] = useSearchParams();
+
+  const id = searchParam.get("id");
+
   useEffect(() => {
     getData();
   }, []);
+
+  useEffect(() => {
+    id && getProductDetail(id);
+  }, [id]);
 
   const getData = async () => {
     setIsLoading(true);
@@ -56,6 +67,21 @@ const CreateProductScreen = () => {
       message.error(error.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const getProductDetail = async (id: string) => {
+    const api = `/product/detail?id=${id}`;
+    try {
+      const res = await handleAPI(api);
+      const data = res.data;
+
+      if (data) {
+        form.setFieldsValue(data);
+        setContent(data.content);
+      }
+    } catch (error: any) {
+      console.log(error.message);
     }
   };
 
@@ -87,9 +113,10 @@ const CreateProductScreen = () => {
     }
 
     try {
-      const res = await handleAPI("/product/create", data, "post");
-      message.success(res.data.message);
-      window.history.back();
+      const api = `/product/${id ? `update?id=${id}` : "create"}`;
+      const method = id ? "put" : "post";
+      const res = await handleAPI(api, data, method);
+      navigate(-1);
     } catch (error: any) {
       message.error(error.message);
     } finally {
@@ -124,12 +151,14 @@ const CreateProductScreen = () => {
       ) : (
         <div className="bg-white px-6 py-4 rounded-lg">
           <div className="flex w-full justify-between">
-            <div className="text-xl">Create product</div>
+            <div className="text-xl">
+              {id ? "Update product" : "Create product"}
+            </div>
             <Space>
               <Button
                 onClick={() => {
                   form.resetFields();
-                  window.history.back();
+                  navigate(-1);
                 }}
               >
                 Cancel
@@ -141,7 +170,7 @@ const CreateProductScreen = () => {
                   form.submit();
                 }}
               >
-                Submit
+                {id ? "Update" : "Submit"}
               </Button>
             </Space>
           </div>
@@ -174,6 +203,7 @@ const CreateProductScreen = () => {
                   apiKey="43qsfp1ypjtycnuhgct3c0vow2guutz01d4wkh2kzn7mr3lz"
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   initialValue={content !== "" ? content : ""}
+                  // value={content}
                   init={{
                     height: 500,
                     menubar: true,

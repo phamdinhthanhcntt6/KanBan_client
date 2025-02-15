@@ -8,6 +8,7 @@ import { CategoryModel } from "../../models/CategoryModel";
 import { FormModel, TreeModel } from "../../models/FormModel";
 import { getTreeData } from "../../utils/getTreeData";
 import { replaceName } from "../../utils/replaceName";
+import { useNavigate } from "react-router-dom";
 
 const { confirm } = Modal;
 
@@ -29,6 +30,8 @@ const CategoryScreen = () => {
   const [pageSize, setPageSize] = useState(10);
 
   const [total, setTotal] = useState<number>(10);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     getData();
@@ -110,13 +113,14 @@ const CategoryScreen = () => {
           titleButton="Add Category"
           extraColumn={(item) => (
             <Space>
-              <>{console.log("slug:=====", item)}</>
               <Button
                 type="text"
                 onClick={() => {
-                  window.location.href = `/category/detail/${replaceName(
-                    item.label
-                  )}?id=${item.value}`;
+                  navigate(
+                    `/category/detail/${replaceName(item.label)}?id=${
+                      item.value
+                    }`
+                  );
                 }}
                 icon={<EyeOutlined className="border-none" />}
               />

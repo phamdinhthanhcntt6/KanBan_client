@@ -11,4 +11,5 @@ export interface ProductModel {
   createAt: string;
   updateAt: string;
   subItems: SubProductModel[];
+  content: string;
 }

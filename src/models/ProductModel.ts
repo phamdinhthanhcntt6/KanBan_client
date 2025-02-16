@@ -12,4 +12,5 @@ export interface ProductModel {
   updateAt: string;
   subItems: SubProductModel[];
   content: string;
+  images: string[];
 }

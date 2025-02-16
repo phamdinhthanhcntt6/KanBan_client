@@ -34,8 +34,6 @@ const InventoryScreen = () => {
 
   const [categoryQuantity, setCategoryQuantity] = useState<number>(0);
 
-  const [images, setImages] = useState([]);
-
   const navigate = useNavigate();
 
   useEffect(() => {

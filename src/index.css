@@ -46,11 +46,11 @@ code {
   border: 1px solid #eee !important;
 }
 
-.tox-statusbar__branding a {
-  display: none !important;
-}
-
-.hidden-inp {
+.tox-statusbar__help-text,
+.tox-statusbar__wordcount,
+.hidden-inp,
+.tox-statusbar__branding a,
+.tox-statusbar__path-item {
   display: none !important;
 }
 

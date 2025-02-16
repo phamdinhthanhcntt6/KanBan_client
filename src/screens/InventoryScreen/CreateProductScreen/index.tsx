@@ -4,13 +4,17 @@ import {
   Button,
   Divider,
   Form,
+  GetProp,
   Input,
   message,
   Select,
   Space,
   Spin,
-  Image,
   TreeSelect,
+  Upload,
+  UploadFile,
+  UploadProps,
+  Image,
 } from "antd";
 import { useEffect, useRef, useState } from "react";
 import handleAPI from "../../../apis/handleApi";
@@ -20,6 +24,9 @@ import { getTreeData } from "../../../utils/getTreeData";
 import { replaceName } from "../../../utils/replaceName";
 import { uploadFile } from "../../../utils/uploadFile";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { getBase64 } from "../../../utils/getBase64";
+
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const CreateProductScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -36,11 +43,13 @@ const CreateProductScreen = () => {
 
   const [isLoadingCreateProduct, setIsLoadingCreateProduct] = useState(false);
 
-  const [files, setFiles] = useState<any[]>([]);
+  const [fileList, setFileList] = useState<any[]>([]);
+
+  const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+
+  const [previewImage, setPreviewImage] = useState("");
 
   const editorRef = useRef<any>(null);
-
-  const inputImageRef = useRef<any>(null);
 
   const [form] = Form.useForm();
 
@@ -77,8 +86,22 @@ const CreateProductScreen = () => {
       const data = res.data;
 
       if (data) {
+        console.log(data);
         form.setFieldsValue(data);
         setContent(data.content);
+
+        if (data.images && data.images.length > 0) {
+          const items = [...fileList];
+          data.images.forEach((url: string) =>
+            items.push({
+              uid: `image_${Date.now().toString()}`,
+              name: url,
+              status: "done",
+              url,
+            })
+          );
+          setFileList(items);
+        }
       }
     } catch (error: any) {
       console.log(error.message);
@@ -99,13 +122,17 @@ const CreateProductScreen = () => {
     data.content = content;
     data.slug = replaceName(data.title);
 
-    if (files.length > 0) {
+    if (fileList.length > 0) {
       const urls: string[] = [];
 
-      for (const i in files) {
-        if (files[i].size && files[i].size > 0) {
-          const url = await uploadFile(files[i]);
-          urls.push(url);
+      for (const file of fileList) {
+        if (file.originFileObj) {
+          const url = await uploadFile(file.originFileObj);
+          if (url) {
+            urls.push(url);
+          }
+        } else {
+          urls.push(file.url);
         }
       }
 
@@ -113,9 +140,9 @@ const CreateProductScreen = () => {
     }
 
     try {
-      const api = `/product/${id ? `update?id=${id}` : "create"}`;
+      const api = `/product/${id ? `update?id=${id}` : `create`}`;
       const method = id ? "put" : "post";
-      const res = await handleAPI(api, data, method);
+      await handleAPI(api, data, method);
       navigate(-1);
     } catch (error: any) {
       message.error(error.message);
@@ -142,6 +169,18 @@ const CreateProductScreen = () => {
     const data = res.data.items;
 
     setCategoryOption(getTreeData(data, true));
+  };
+
+  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
+    setFileList(newFileList);
+
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
   };
 
   return (
@@ -304,46 +343,31 @@ const CreateProductScreen = () => {
                     )}
                   />
                 </Form.Item>
-
-                <div className="flex flex-col gap-y-2">
-                  <div className="flex-wrap">
-                    {files.length > 0 && (
-                      <Image.PreviewGroup>
-                        {Object.keys(files).map(
-                          (i) =>
-                            files[parseInt(i)].size &&
-                            files[parseInt(i)].size > 0 && (
-                              <Image
-                                key={i}
-                                src={URL.createObjectURL(files[parseInt(i)])}
-                                width={100}
-                                height={100}
-                              />
-                            )
-                        )}
-                      </Image.PreviewGroup>
-                    )}
-                  </div>
-                  <Button
-                    icon={<UploadOutlined />}
-                    type="dashed"
-                    className="mb-7 w-max"
-                    onClick={() => inputImageRef.current.click()}
+                <div className="flex flex-col gap-y-2 mb-6">
+                  <Upload
+                    name="images"
+                    listType="picture-card"
+                    fileList={fileList}
+                    onPreview={handlePreview}
+                    onChange={handleChange}
+                    multiple
+                    accept="image/*"
                   >
-                    Upload images
-                  </Button>
+                    Upload
+                  </Upload>
+                  {previewImage && (
+                    <Image
+                      wrapperStyle={{ display: "none" }}
+                      preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => setPreviewOpen(visible),
+                        afterOpenChange: (visible) =>
+                          !visible && setPreviewImage(""),
+                      }}
+                      src={previewImage}
+                    />
+                  )}
                 </div>
-
-                <input
-                  className="hidden-inp"
-                  type="file"
-                  multiple
-                  onChange={(val: any) =>
-                    val.target.files && setFiles(val.target.files)
-                  }
-                  ref={inputImageRef}
-                  accept="image/*"
-                />
 
                 <div className="flex flex-row w-full gap-x-2">
                   <Input

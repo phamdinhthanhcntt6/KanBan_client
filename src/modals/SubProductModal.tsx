@@ -33,7 +33,7 @@ const SubProductModal = (props: Props) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<any[]>([]);
 
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
 
@@ -54,10 +54,16 @@ const SubProductModal = (props: Props) => {
       if (fileList.length > 0) {
         const urls: string[] = [];
 
-        fileList.forEach(async (file) => {
-          const url = await uploadFile(file.originFileObj);
-          url && urls.push(url);
-        });
+        for (const file of fileList) {
+          if (file.originFileObj) {
+            const url = await uploadFile(file.originFileObj);
+            if (url) {
+              urls.push(url);
+            }
+          } else {
+            urls.push(file.url);
+          }
+        }
 
         data.images = urls;
       }
@@ -70,7 +76,6 @@ const SubProductModal = (props: Props) => {
       }
 
       setIsLoading(true);
-
       try {
         const api = `/sub-product/create`;
         const res = await handleAPI(api, data, "post");
@@ -118,10 +123,7 @@ const SubProductModal = (props: Props) => {
     >
       <span className="flex flex-row text-lg text-[#F15E2B]">
         Product name:&nbsp;
-        <div className="font-semibold text-[#000000e0]">
-          {product?.title}
-          {product?._id}
-        </div>
+        <div className="font-semibold text-[#000000e0]">{product?.title}</div>
       </span>
       <Form
         onFinish={handleCreateSubProduct}

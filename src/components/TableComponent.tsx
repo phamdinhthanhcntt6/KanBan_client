@@ -1,9 +1,10 @@
+import { DeleteTwoTone } from "@ant-design/icons";
 import { Button, Table, Typography } from "antd";
-import { FormModel } from "../models/FormModel";
-import { useEffect, useState } from "react";
 import { ColumnProps } from "antd/es/table";
 import { Resizable } from "re-resizable";
+import { ReactNode, useEffect, useState } from "react";
 import { ExportModal } from "../modals";
+import { FormModel } from "../models/FormModel";
 
 interface Props {
   forms?: FormModel;
@@ -20,6 +21,8 @@ interface Props {
   exportExcel?: boolean;
   titleButton?: string;
   column?: ColumnProps<any>[];
+  rowSelectionTable?: any;
+  extraHeader?: ReactNode;
 }
 
 const { Title } = Typography;
@@ -40,6 +43,9 @@ const TableComponent = (props: Props) => {
     exportExcel,
     titleButton,
     column,
+    rowSelectionTable,
+
+    extraHeader,
   } = props;
 
   const [pageInfo, setPageInfo] = useState<{
@@ -49,7 +55,7 @@ const TableComponent = (props: Props) => {
 
   const [columns, setColumns] = useState<ColumnProps<any>[]>([]);
 
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
 
   useEffect(() => {
     onPageChange(pageInfo);
@@ -149,10 +155,12 @@ const TableComponent = (props: Props) => {
         }}
         bordered
         loading={loading}
+        rowSelection={rowSelectionTable}
         dataSource={records}
         columns={forms ? columns : column}
         title={() => (
           <div className="flex flex-row justify-between">
+            {extraHeader && extraHeader}
             <Title level={5}>{forms?.title}</Title>
             <div className="flex flex-row gap-x-3">
               <Button className="bg-[#F15E2B] text-white" onClick={onCreate}>

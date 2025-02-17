@@ -11,6 +11,7 @@ interface Props {
   visible: boolean;
   onClose: () => void;
   api: string;
+  form?: any;
 }
 
 const ExportModal = (props: Props) => {
@@ -40,7 +41,7 @@ const ExportModal = (props: Props) => {
     setIsLoadingExport(true);
     try {
       const res = await handleAPI(url);
-      res.data && setForms(res.data);
+      res.data && api !== "product" && setForms(res.data);
     } catch (error) {
       console.log(error);
     } finally {

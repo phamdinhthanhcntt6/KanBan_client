@@ -1,10 +1,11 @@
-import { CopyOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import { CopyOutlined, PlusOutlined } from "@ant-design/icons";
 import { Editor } from "@tinymce/tinymce-react";
 import {
   Button,
   Divider,
   Form,
   GetProp,
+  Image,
   Input,
   message,
   Select,
@@ -14,17 +15,16 @@ import {
   Upload,
   UploadFile,
   UploadProps,
-  Image,
 } from "antd";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import handleAPI from "../../../apis/handleApi";
 import { CategoryModal } from "../../../modals";
 import { SelectModel, TreeModel } from "../../../models/FormModel";
+import { getBase64 } from "../../../utils/getBase64";
 import { getTreeData } from "../../../utils/getTreeData";
 import { replaceName } from "../../../utils/replaceName";
 import { uploadFile } from "../../../utils/uploadFile";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { getBase64 } from "../../../utils/getBase64";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -128,9 +128,7 @@ const CreateProductScreen = () => {
       for (const file of fileList) {
         if (file.originFileObj) {
           const url = await uploadFile(file.originFileObj);
-          if (url) {
-            urls.push(url);
-          }
+          url && urls.push(url);
         } else {
           urls.push(file.url);
         }

@@ -57,9 +57,7 @@ const SubProductModal = (props: Props) => {
         for (const file of fileList) {
           if (file.originFileObj) {
             const url = await uploadFile(file.originFileObj);
-            if (url) {
-              urls.push(url);
-            }
+            url && urls.push(url);
           } else {
             urls.push(file.url);
           }
@@ -121,7 +119,7 @@ const SubProductModal = (props: Props) => {
       }}
       onClose={handleCancel}
     >
-      <span className="flex flex-row text-lg text-[#F15E2B]">
+      <span className="flex flex-row text-lg text-[#F15E2B] flex-wrap">
         Product name:&nbsp;
         <div className="font-semibold text-[#000000e0]">{product?.title}</div>
       </span>

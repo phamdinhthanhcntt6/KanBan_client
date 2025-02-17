@@ -1,10 +1,20 @@
 import {
   DeleteTwoTone,
   EditTwoTone,
+  FilterTwoTone,
   PlusCircleTwoTone,
 } from "@ant-design/icons";
-import { Avatar, Button, message, Modal, Space, Tag, Tooltip } from "antd";
-import { ColumnProps } from "antd/es/table";
+import {
+  Avatar,
+  Button,
+  Input,
+  message,
+  Modal,
+  Space,
+  Tag,
+  Tooltip,
+} from "antd";
+import { ColumnProps, TableProps } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import handleAPI from "../../apis/handleApi";
@@ -13,8 +23,13 @@ import TableComponent from "../../components/TableComponent";
 import { SubProductModal } from "../../modals";
 import { ProductModel } from "../../models/ProductModel";
 import { SubProductModel } from "../../models/SubProductModel";
+import { replaceName } from "../../utils/replaceName";
+import { truncated } from "../../utils/truncatedText";
 
 const { confirm } = Modal;
+
+type TableRowSelection<T extends object = object> =
+  TableProps<T>["rowSelection"];
 
 const InventoryScreen = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -34,6 +49,12 @@ const InventoryScreen = () => {
 
   const [categoryQuantity, setCategoryQuantity] = useState<number>(0);
 
+  const [productQuantity, setProductQuantity] = useState<number>(0);
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  const [searchKey, setSearchKey] = useState<string>("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,6 +64,10 @@ const InventoryScreen = () => {
   useEffect(() => {
     getProducts();
   }, [page, pageSize]);
+
+  useEffect(() => {
+    !searchKey && getProducts();
+  }, [searchKey]);
 
   const getData = async () => {
     setIsLoading(true);
@@ -65,15 +90,20 @@ const InventoryScreen = () => {
   };
 
   const getProducts = async () => {
-    const api = `/product?page=${page}&pageSize=${pageSize}`;
+    const api = `/product?title=${replaceName(
+      searchKey
+    )}&page=${page}&pageSize=${pageSize}`;
     setIsLoading(true);
     try {
       const res = await handleAPI(api);
 
+      setProductQuantity(res.data.total);
+
       const items: ProductModel[] = [];
 
-      res.data.forEach((item: any, index: number) =>
+      res.data.items.forEach((item: any, index: number) =>
         items.push({
+          key: `${item._id}`,
           index: (page - 1) * pageSize + index + 1,
           ...item,
         })
@@ -90,7 +120,6 @@ const InventoryScreen = () => {
   const removeProduct = async (id: string) => {
     try {
       await handleAPI(`product/remove?id=${id}`, undefined, "delete");
-      // getProducts();
 
       const items = [...products];
       const index = items.findIndex((element) => element._id === id);
@@ -125,7 +154,9 @@ const InventoryScreen = () => {
       fixed: "left",
       render: (product: ProductModel) => (
         <Link to={`/inventory/detail/${product.slug}?id=${product._id}`}>
-          <Button type="link">{product.title}</Button>
+          <Tooltip title={product.title}>
+            <Button type="link">{truncated(product.title)}</Button>
+          </Tooltip>
         </Link>
       ),
     },
@@ -133,6 +164,11 @@ const InventoryScreen = () => {
       key: "description",
       dataIndex: "description",
       title: "Description",
+      render: (description: string) => (
+        <Tooltip title={description}>
+          <div className="line-clamp-2">{truncated(description, 40)}</div>
+        </Tooltip>
+      ),
     },
     {
       key: "categories",
@@ -181,11 +217,11 @@ const InventoryScreen = () => {
         items.forEach(
           (item) => !colors.includes(item.color) && colors.push(item.color)
         );
-
+        const length = colors.length;
         return (
           <Space>
             {colors.length > 0 &&
-              colors.map((item, index: number) => (
+              colors.splice(0, 3).map((item, index: number) => (
                 <div
                   className="rounded-full h-6 w-6"
                   key={`color${index}`}
@@ -194,6 +230,11 @@ const InventoryScreen = () => {
                   }}
                 />
               ))}
+            <>
+              {length > 3 && (
+                <div className="rounded-full h-6 w-6 border">+{length - 3}</div>
+              )}
+            </>
           </Space>
         );
       },
@@ -202,14 +243,18 @@ const InventoryScreen = () => {
       key: "size",
       dataIndex: "subItems",
       title: "Size",
-      render: (items: SubProductModel[]) => (
-        <Space>
-          {items.length > 0 &&
-            items.map((item: SubProductModel) => (
-              <Tag key={`size${item.size}`}>{item.size}</Tag>
-            ))}
-        </Space>
-      ),
+      render: (items: SubProductModel[]) => {
+        const uniqueSizes = Array.from(new Set(items.map((item) => item.size)));
+
+        return (
+          <Space className="flex-wrap">
+            {uniqueSizes.length > 0 &&
+              uniqueSizes.map((size, index) => (
+                <Tag key={`${size}-${index}`}>{size}</Tag>
+              ))}
+          </Space>
+        );
+      },
     },
     {
       key: "price",
@@ -274,6 +319,82 @@ const InventoryScreen = () => {
     },
   ];
 
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const rowSelection: TableRowSelection<ProductModel> = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+
+  const renderExtraHeader = () => {
+    return (
+      <div className="flex flex-row items-center gap-x-4">
+        <>
+          <Button
+            icon={<FilterTwoTone twoToneColor="#F15E2B" />}
+            onClick={() => {}}
+          >
+            Filter
+          </Button>
+          <Input.Search
+            allowClear
+            value={searchKey}
+            onChange={(val) => setSearchKey(val.target.value)}
+            onSearch={handleSearch}
+            placeholder="Search product"
+          />
+        </>
+        {selectedRowKeys.length > 0 && (
+          <div className="w-max flex items-center gap-x-4">
+            <div className="w-max flex-nowrap">
+              {selectedRowKeys.length} item(s) selected
+            </div>
+            <Button
+              onClick={() =>
+                confirm({
+                  title: "Confirm",
+                  content: "Are you sure you want to remove these products?",
+                  onOk: () => {
+                    selectedRowKeys.forEach(
+                      async (key: any) => await removeProduct(key)
+                    );
+                  },
+                })
+              }
+            >
+              <DeleteTwoTone twoToneColor="#F15E2B" size={18} />
+            </Button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const handleSearch = async () => {
+    const searchText = replaceName(searchKey);
+    setPage(1);
+
+    const api = `/product?title=${searchText}&page=${page}&pageSize=${pageSize}`;
+
+    try {
+      setIsLoading(true);
+
+      const res = await handleAPI(api);
+      setProducts(res.data.items);
+
+      const count = res.data.count.length;
+      setTotal(count);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFilter = () => {};
+
   return (
     <div className="flex flex-col">
       <div className="flex px-4 py-5 rounded-lg h-max mx-8 my-[10px] bg-white flex-col">
@@ -293,7 +414,7 @@ const InventoryScreen = () => {
             </div>
             <div className="flex flex-row gap-x-20">
               <div className="flex flex-col text-start">
-                <div className="font-medium">{products.length}</div>
+                <div className="font-medium">{productQuantity ?? 0}</div>
                 <div className="font-normal">Last 7 days</div>
               </div>
               <div className="flex flex-col text-end">
@@ -350,6 +471,8 @@ const InventoryScreen = () => {
             navigate("/inventory/create-product");
           }}
           total={total}
+          rowSelectionTable={rowSelection}
+          extraHeader={renderExtraHeader()}
         />
       </div>
       <SubProductModal

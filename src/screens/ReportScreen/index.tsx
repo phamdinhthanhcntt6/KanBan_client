@@ -1,5 +1,5 @@
 const ReportScreen = () => {
-  return <div className="animation1 box">Report</div>;
+  return <div className="">Report</div>;
 };
 
 export default ReportScreen;

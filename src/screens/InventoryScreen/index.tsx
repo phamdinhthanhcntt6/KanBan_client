@@ -1,12 +1,14 @@
 import {
+  ClearOutlined,
   DeleteTwoTone,
   EditTwoTone,
-  FilterTwoTone,
+  FilterOutlined,
   PlusCircleTwoTone,
 } from "@ant-design/icons";
 import {
   Avatar,
   Button,
+  Dropdown,
   Input,
   message,
   Modal,
@@ -19,8 +21,10 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import handleAPI from "../../apis/handleApi";
 import DisplayNameComponent from "../../components/DisplayNameComponent";
+import FilterComponent from "../../components/FilterComponent";
 import TableComponent from "../../components/TableComponent";
 import { SubProductModal } from "../../modals";
+import { FilterModel } from "../../models/FilterModel";
 import { ProductModel } from "../../models/ProductModel";
 import { SubProductModel } from "../../models/SubProductModel";
 import { replaceName } from "../../utils/replaceName";
@@ -54,6 +58,8 @@ const InventoryScreen = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const [searchKey, setSearchKey] = useState<string>("");
+
+  const [isFilter, setIsFilter] = useState(false);
 
   const navigate = useNavigate();
 
@@ -332,18 +338,34 @@ const InventoryScreen = () => {
     return (
       <div className="flex flex-row items-center gap-x-4">
         <>
-          <Button
-            icon={<FilterTwoTone twoToneColor="#F15E2B" />}
-            onClick={() => {}}
+          <Dropdown
+            dropdownRender={() => (
+              <FilterComponent onFilter={(val) => handleFilter(val)} />
+            )}
           >
-            Filter
-          </Button>
+            <Button icon={<FilterOutlined />} type="dashed">
+              Filter
+            </Button>
+          </Dropdown>
+          {isFilter && (
+            <Button
+              icon={<ClearOutlined />}
+              onClick={async () => {
+                setPage(1);
+                await getProducts();
+                setIsFilter(false);
+              }}
+              type="dashed"
+            >
+              Clear
+            </Button>
+          )}
           <Input.Search
             allowClear
             value={searchKey}
             onChange={(val) => setSearchKey(val.target.value)}
             onSearch={handleSearch}
-            placeholder="Search product"
+            placeholder="Search"
           />
         </>
         {selectedRowKeys.length > 0 && (
@@ -372,31 +394,8 @@ const InventoryScreen = () => {
     );
   };
 
-  const handleSearch = async () => {
-    const searchText = replaceName(searchKey);
-    setPage(1);
-
-    const api = `/product?title=${searchText}&page=${page}&pageSize=${pageSize}`;
-
-    try {
-      setIsLoading(true);
-
-      const res = await handleAPI(api);
-      setProducts(res.data.items);
-
-      const count = res.data.count.length;
-      setTotal(count);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleFilter = () => {};
-
-  return (
-    <div className="flex flex-col">
+  const renderOverallInventory = () => {
+    return (
       <div className="flex px-4 py-5 rounded-lg h-max mx-8 my-[10px] bg-white flex-col">
         <div className="text-lg font-medium mb-4">Overall Inventory</div>
         <div className="flex flex-row justify-between text-gray-600">
@@ -455,6 +454,45 @@ const InventoryScreen = () => {
           </div>
         </div>
       </div>
+    );
+  };
+
+  const handleSearch = async () => {
+    setPage(1);
+
+    const searchText = replaceName(searchKey);
+    const api = `/product?title=${searchText}&page=${page}&pageSize=${pageSize}`;
+
+    try {
+      setIsLoading(true);
+
+      const res = await handleAPI(api);
+      setProducts(res.data.items);
+
+      const count = res.data.count.length;
+      setTotal(count);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFilter = async (values: FilterModel) => {
+    const api = `/product/filter`;
+    setIsFilter(true);
+    try {
+      const res = await handleAPI(api, values, "post");
+      setTotal(res.data.total);
+      setProducts(res.data.items);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="flex flex-col">
+      {renderOverallInventory()}
       <div className="mt-[10px] bg-white mx-8 rounded-lg h-max">
         <TableComponent
           api="/product"

@@ -136,7 +136,7 @@ const InventoryScreen = () => {
 
       setProducts(items);
 
-      message.success("Delete product successfully!");
+      message.success("Remove product successfully!");
     } catch (error: any) {
       message.error(error.message);
     }
@@ -153,8 +153,6 @@ const InventoryScreen = () => {
         : `${ranges[0]}`
       : "0";
   };
-
-  console.log(products);
 
   const columns: ColumnProps<ProductModel>[] = [
     {
@@ -529,7 +527,7 @@ const InventoryScreen = () => {
           setProductSelected(undefined);
           setIsVisibleModalProduct(false);
         }}
-        onCreate={async () => {
+        onOK={async () => {
           await getProducts();
         }}
         product={productSelected}

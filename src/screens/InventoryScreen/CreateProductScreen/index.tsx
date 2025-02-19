@@ -83,10 +83,9 @@ const CreateProductScreen = () => {
     const api = `/product/detail?id=${id}`;
     try {
       const res = await handleAPI(api);
-      const data = res.data;
+      const data = res.data.items;
 
       if (data) {
-        console.log(data);
         form.setFieldsValue(data);
         setContent(data.content);
 

@@ -12,7 +12,7 @@ import {
   UploadProps,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import handleAPI from "../apis/handleApi";
 import { ProductModel } from "../models/ProductModel";
 import { SubProductModel } from "../models/SubProductModel";
@@ -23,13 +23,14 @@ interface Props {
   isVisible: boolean;
   onClose: () => void;
   product?: ProductModel;
-  onCreate: (val: SubProductModel) => void;
+  onOK: (val: SubProductModel) => void;
+  subProduct?: SubProductModel;
 }
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const SubProductModal = (props: Props) => {
-  const { isVisible, onClose, product, onCreate } = props;
+  const { isVisible, onClose, product, onOK, subProduct } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -40,6 +41,24 @@ const SubProductModal = (props: Props) => {
   const [previewImage, setPreviewImage] = useState("");
 
   const [form] = useForm();
+
+  useEffect(() => {
+    if (subProduct) {
+      form.setFieldsValue(subProduct);
+      const items = [...fileList];
+      subProduct.images.length > 0 &&
+        subProduct.images.forEach((url: string) =>
+          items.push({
+            uid: `image_${Date.now().toString()}`,
+            name: url,
+            status: "done",
+            url,
+          })
+        );
+
+      setFileList(items);
+    }
+  }, [subProduct]);
 
   const handleCreateSubProduct = async (values: any) => {
     if (product) {
@@ -75,9 +94,12 @@ const SubProductModal = (props: Props) => {
 
       setIsLoading(true);
       try {
-        const api = `/sub-product/create`;
-        const res = await handleAPI(api, data, "post");
-        onCreate(res.data);
+        const method = subProduct ? "put" : "post";
+        const api = `/sub-product/${
+          subProduct ? `update?id=${subProduct._id}` : "create"
+        }`;
+        const res = await handleAPI(api, data, method);
+        onOK(res.data);
         handleCancel();
       } catch (error: any) {
         console.log(error.message);
@@ -110,7 +132,7 @@ const SubProductModal = (props: Props) => {
 
   return (
     <Modal
-      title={`Create sub product`}
+      title={`${subProduct ? "Update sub product" : "Create sub product"}`}
       open={isVisible}
       onCancel={handleCancel}
       onOk={() => form.submit()}

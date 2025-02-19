@@ -13,4 +13,5 @@ export interface ProductModel {
   subItems: SubProductModel[];
   content: string;
   images: string[];
+  _v: number;
 }

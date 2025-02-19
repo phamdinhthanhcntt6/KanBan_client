@@ -20,15 +20,17 @@ import { ColumnProps, TableProps } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import handleAPI from "../../apis/handleApi";
-import DisplayNameComponent from "../../components/DisplayNameComponent";
 import FilterComponent from "../../components/FilterComponent";
 import TableComponent from "../../components/TableComponent";
 import { SubProductModal } from "../../modals";
 import { FilterModel } from "../../models/FilterModel";
 import { ProductModel } from "../../models/ProductModel";
 import { SubProductModel } from "../../models/SubProductModel";
+import { SupplierModel } from "../../models/SupplierModel";
 import { replaceName } from "../../utils/replaceName";
 import { truncated } from "../../utils/truncatedText";
+import { CategoryModel } from "../../models/CategoryModel";
+import { tagColor } from "../../constant/colors";
 
 const { confirm } = Modal;
 
@@ -152,6 +154,8 @@ const InventoryScreen = () => {
       : "0";
   };
 
+  console.log(products);
+
   const columns: ColumnProps<ProductModel>[] = [
     {
       key: "title",
@@ -178,22 +182,28 @@ const InventoryScreen = () => {
     },
     {
       key: "categories",
-      dataIndex: "categories",
+      dataIndex: "categoriesName",
       title: "Categories",
-      render: (categories: string[]) => (
+      render: (categories: CategoryModel[]) => (
         <div className="flex-wrap">
           {categories &&
-            categories.map((item: any, index: number) => (
-              <DisplayNameComponent id={item} type="category" key={index} />
+            categories.map((item) => (
+              <Link to={`/category/detail/id=${item._id}`}>
+                <Tag
+                  color={tagColor[Math.floor(Math.random() * tagColor.length)]}
+                >
+                  {item.title}
+                </Tag>
+              </Link>
             ))}
         </div>
       ),
     },
     {
       key: "supplier",
-      dataIndex: "supplier",
+      dataIndex: "supplierName",
       title: "Supplier",
-      render: (id: string) => <DisplayNameComponent type="supplier" id={id} />,
+      render: (supplier: SupplierModel) => <>{supplier.name}</>,
     },
     {
       key: "images",

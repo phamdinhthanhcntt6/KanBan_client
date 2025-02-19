@@ -37,15 +37,17 @@ const ExportModal = (props: Props) => {
   }, [api, visible]);
 
   const getForm = async () => {
-    const url = `${api}/get-form`;
-    setIsLoadingExport(true);
-    try {
-      const res = await handleAPI(url);
-      res.data && api !== "product" && setForms(res.data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoadingExport(false);
+    if (api !== "/product") {
+      const url = `${api}/get-form`;
+      setIsLoadingExport(true);
+      try {
+        const res = await handleAPI(url);
+        res.data && api !== "product" && setForms(res.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoadingExport(false);
+      }
     }
   };
 

@@ -109,13 +109,14 @@ const InventoryScreen = () => {
 
       const items: ProductModel[] = [];
 
-      res.data.items.forEach((item: any, index: number) =>
-        items.push({
-          key: `${item._id}`,
-          index: (page - 1) * pageSize + index + 1,
-          ...item,
-        })
-      );
+      res.data.items &&
+        res.data.items.forEach((item: any, index: number) =>
+          items.push({
+            key: `${item._id}`,
+            index: (page - 1) * pageSize + index + 1,
+            ...item,
+          })
+        );
       setProducts(items);
       setTotal(res.data.total);
     } catch (error: any) {
@@ -228,9 +229,10 @@ const InventoryScreen = () => {
       render: (items: SubProductModel[]) => {
         const colors: string[] = [];
 
-        items.forEach(
-          (item) => !colors.includes(item.color) && colors.push(item.color)
-        );
+        items &&
+          items.forEach(
+            (item) => !colors.includes(item.color) && colors.push(item.color)
+          );
         const length = colors.length;
         return (
           <Space>
@@ -387,9 +389,10 @@ const InventoryScreen = () => {
                   title: "Confirm",
                   content: "Are you sure you want to remove these products?",
                   onOk: () => {
-                    selectedRowKeys.forEach(
-                      async (key: any) => await removeProduct(key)
-                    );
+                    selectedRowKeys &&
+                      selectedRowKeys.forEach(
+                        async (key: any) => await removeProduct(key)
+                      );
                   },
                 })
               }

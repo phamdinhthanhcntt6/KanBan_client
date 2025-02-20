@@ -15,8 +15,6 @@ interface Props {
 const CategoryModal = (props: Props) => {
   const { visible, onClose, onFinish, values, category } = props;
 
-  const [file, setFile] = useState<any>();
-
   const [isLoading, setIsLoading] = useState(false);
 
   const [form] = Form.useForm();

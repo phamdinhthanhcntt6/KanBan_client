@@ -12,13 +12,15 @@ export const getTreeData = (data: any[], isSelect?: boolean) => {
   );
 
   newItems.forEach((item) => {
+    const children = getChildren(
+      data,
+      isSelect ? item.value : item._id,
+      isSelect ?? false
+    );
+
     values.push({
       ...item,
-      children: getChildren(
-        data,
-        isSelect ? item.value : item._id,
-        isSelect ?? false
-      ),
+      children,
     });
   });
 

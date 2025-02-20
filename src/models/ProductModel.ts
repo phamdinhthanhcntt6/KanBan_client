@@ -14,4 +14,5 @@ export interface ProductModel {
   content: string;
   images: string[];
   _v: number;
+  rating: number;
 }

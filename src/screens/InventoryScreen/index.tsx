@@ -22,15 +22,16 @@ import { Link, useNavigate } from "react-router-dom";
 import handleAPI from "../../apis/handleApi";
 import FilterComponent from "../../components/FilterComponent";
 import TableComponent from "../../components/TableComponent";
+import { tagColor } from "../../constant/colors";
 import { SubProductModal } from "../../modals";
+import { CategoryModel } from "../../models/CategoryModel";
 import { FilterModel } from "../../models/FilterModel";
 import { ProductModel } from "../../models/ProductModel";
 import { SubProductModel } from "../../models/SubProductModel";
 import { SupplierModel } from "../../models/SupplierModel";
 import { replaceName } from "../../utils/replaceName";
 import { truncated } from "../../utils/truncatedText";
-import { CategoryModel } from "../../models/CategoryModel";
-import { tagColor } from "../../constant/colors";
+import axios from "axios";
 
 const { confirm } = Modal;
 
@@ -52,8 +53,6 @@ const InventoryScreen = () => {
   const [pageSize, setPageSize] = useState<number>(10);
 
   const [total, setTotal] = useState<number>(10);
-
-  const [categoryQuantity, setCategoryQuantity] = useState<number>(0);
 
   const [productQuantity, setProductQuantity] = useState<number>(0);
 
@@ -81,20 +80,12 @@ const InventoryScreen = () => {
     setIsLoading(true);
     try {
       await getProducts();
-      await getCategoryList();
       await getProducts();
     } catch (error: any) {
       message.error(error.message);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getCategoryList = async () => {
-    const api = `/category`;
-    const res = await handleAPI(api);
-    const quantity = res.data.items.length;
-    setCategoryQuantity(quantity);
   };
 
   const getProducts = async () => {
@@ -167,16 +158,6 @@ const InventoryScreen = () => {
             <Button type="link">{truncated(product.title)}</Button>
           </Tooltip>
         </Link>
-      ),
-    },
-    {
-      key: "description",
-      dataIndex: "description",
-      title: "Description",
-      render: (description: string) => (
-        <Tooltip title={description}>
-          <div className="line-clamp-2">{truncated(description, 40)}</div>
-        </Tooltip>
       ),
     },
     {
@@ -259,16 +240,19 @@ const InventoryScreen = () => {
       key: "size",
       dataIndex: "subItems",
       title: "Size",
+      width: "100px",
       render: (items: SubProductModel[]) => {
         const uniqueSizes = Array.from(new Set(items.map((item) => item.size)));
 
         return (
-          <Space className="flex-wrap">
+          <div className="flex flex-wrap gap-1 w-max">
             {uniqueSizes.length > 0 &&
               uniqueSizes.map((size, index) => (
-                <Tag key={`${size}-${index}`}>{size}</Tag>
+                <div key={`${size}-${index}`} className="w-[30%]">
+                  <Tag>{size}</Tag>
+                </div>
               ))}
-          </Space>
+          </div>
         );
       },
     },
@@ -276,7 +260,11 @@ const InventoryScreen = () => {
       key: "price",
       dataIndex: "subItems",
       title: "Price",
-      render: (items: SubProductModel[]) => <>{getRangePrice(items)}</>,
+      render: (items: SubProductModel[]) => (
+        <div className="flex-nowrap whitespace-nowrap">
+          {getRangePrice(items)}
+        </div>
+      ),
     },
     {
       key: "stocks",
@@ -414,7 +402,7 @@ const InventoryScreen = () => {
             <div className="text-[#F15E2B] text-lg font-medium ">
               Categories
             </div>
-            <div className="font-medium">{categoryQuantity ?? 0}</div>
+            <div className="font-medium">20</div>
             <div className="font-normal">Last 7 days</div>
           </div>
           <div className="border" />
@@ -480,7 +468,7 @@ const InventoryScreen = () => {
       const res = await handleAPI(api);
       setProducts(res.data.items);
 
-      const count = res.data.count.length;
+      const count = res.data.total ? res.data.total.length : 0;
       setTotal(count);
     } catch (error) {
       console.log(error);

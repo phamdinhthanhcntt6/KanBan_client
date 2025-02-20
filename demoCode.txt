@@ -1,0 +1,172 @@
+  const colors = [
+    "#E15353",
+    "#5553E1",
+    "#E1A053",
+    "#131118",
+    "#A3D139",
+    "#E1D353",
+  ];
+
+  const sizes = ["S", "M", "L", "XL", "XXL", "XXXL"];
+
+  const images = [
+    "https://images.pexels.com/photos/2584269/pexels-photo-2584269.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/2681751/pexels-photo-2681751.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/2752045/pexels-photo-2752045.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/1485031/pexels-photo-1485031.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/1631181/pexels-photo-1631181.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/2010812/pexels-photo-2010812.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/2233703/pexels-photo-2233703.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/2065195/pexels-photo-2065195.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/3363204/pexels-photo-3363204.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/983497/pexels-photo-983497.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/3672825/pexels-photo-3672825.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/36029/aroni-arsa-children-little.jpg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/2738792/pexels-photo-2738792.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/2866077/pexels-photo-2866077.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/2010925/pexels-photo-2010925.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/3054973/pexels-photo-3054973.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/2693849/pexels-photo-2693849.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=600",
+  ];
+
+  const cat = [
+    "67b6fd0cc573a984ba5bc999",
+    "67b6fd1cc573a984ba5bc99e",
+    "67b6fd31c573a984ba5bc9a3",
+    "67b6fd43c573a984ba5bc9a8",
+    "67b6fd4dc573a984ba5bc9ad",
+    "67b6fd60c573a984ba5bc9b2",
+    "67b6fd6ec573a984ba5bc9b7",
+    "67b6fd7ec573a984ba5bc9bc",
+    "67b6fd8dc573a984ba5bc9c1",
+    "67b6fd9fc573a984ba5bc9c6",
+    "67b6fdb8c573a984ba5bc9cb",
+    "67b6fdc5c573a984ba5bc9d0",
+    "67b6fdd7c573a984ba5bc9d5",
+    "67b71c66ae46aed0cd1a9a1a",
+    "67b71ef29815931f3daaba8b",
+    "67b71f029815931f3daaba8f",
+    "67b71f0b9815931f3daaba93",
+    "67b71f279815931f3daaba97",
+    "67b743389815931f3daabaa3",
+    "67b743489815931f3daabaa7",
+    "67b743609815931f3daabaab",
+    "67b7436f9815931f3daabaaf",
+    "67b743a99815931f3daabab3",
+    "67b743be9815931f3daabab7",
+    "67b743d99815931f3daababb",
+    "67b743f69815931f3daababf",
+    "67b744139815931f3daabac3",
+    "67b744289815931f3daabac7",
+    "67b744379815931f3daabacb",
+    "67b744529815931f3daabacf",
+    "67b744639815931f3daabad3",
+    "67b744759815931f3daabad7",
+    "67b744879815931f3daabadb",
+    "67b7449a9815931f3daabadf",
+    "67b744ab9815931f3daabae3",
+  ];
+
+  const desc =
+    "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ad quidem voluptatum placeat ullam suscipit rerum aspernatur eos, eius dolor cupiditate quasi quam nisi a molestias ratione quaerat nam dolorum excepturi.";
+
+  function getRandomElements(arr: any, num: any) {
+    const shuffled = arr.slice(); // Tạo một bản sao của mảng
+    let i = arr.length;
+    const min = i - num;
+    let temp, index;
+
+    // Shuffle mảng sử dụng Fisher-Yates algorithm
+    while (i-- > min) {
+      index = Math.floor((i + 1) * Math.random());
+      temp = shuffled[index];
+      shuffled[index] = shuffled[i];
+      shuffled[i] = temp;
+    }
+
+    return shuffled.slice(min); // Trả về 3 phần tử cuối cùng đã được shuffle
+  }
+
+  const titless = [
+    "Long sleeve Jacket",
+    "Jacket with wollen hat",
+    "Compact fashion t-shirt",
+    "Blue jins",
+    "Skirts with full setup",
+    "Yellow Hoody",
+    "Black t-shirt for women",
+    "Gouwn with Red velvet",
+    "Pink beauty",
+    "Jean's stylish Jacket",
+    "Jamdani Saree",
+    "Black Jacket",
+    "Black top with jeans",
+    "Clothes with bag",
+    "Stylish jeans in lightblue",
+    "Unknown horizon",
+    "Light tops",
+    "Khakhi jeans",
+    "Black full sleeve",
+    "Formal for Men",
+  ];
+
+  /*
+    try {
+      const res = await axios(
+        "https://fakestoreapiserver.reactbd.com/products"
+      );
+      const titles = res.data.map((item: any) => item.title);
+      console.log(titles);
+    } catch (error) {
+      console.log(error);
+    }
+  */
+
+  const handleAddDataDemo = async () => {
+    Array.from({ length: 20 }).forEach(async (_item, index) => {
+      const category: string[] = getRandomElements(cat, 3);
+
+      const data: any = {
+        title: titless[index],
+        slug: replaceName(titless[index]),
+        description: "",
+        categories: category,
+        supplier: "VietNam",
+        content: "",
+        images: [images[Math.floor(Math.random() * images.length)]],
+      };
+      console.log(data);
+      try {
+        const res = await handleAPI("/product/create", data, "post");
+        console.log("DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+
+        if (res.data) {
+          await handleAddSub(res.data._id);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  };
+
+  const handleAddSub = async (id: string) => {
+    Array.from({ length: 5 }).forEach(async (_item, index) => {
+      const data = {
+        productId: id,
+        size: sizes[index],
+        color: colors[Math.floor(Math.random() * colors.length)],
+        price: Math.floor(Math.random() * 1000),
+        quantity: Math.floor(Math.random() * 100),
+        images: [images[Math.floor(Math.random() * images.length)]],
+      };
+      try {
+        const res = await handleAPI("/sub-product/create", data, "post");
+        console.log(">>>>>>>>>>>>>>>>>>>>>");
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  };

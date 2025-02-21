@@ -248,7 +248,7 @@ const InventoryScreen = () => {
           <div className="flex flex-wrap gap-1 w-max">
             {uniqueSizes.length > 0 &&
               uniqueSizes.map((size, index) => (
-                <div key={`${size}-${index}`} className="w-[30%]">
+                <div key={`${size}-${index}`} className="w-[15%]">
                   <Tag>{size}</Tag>
                 </div>
               ))}
@@ -395,8 +395,8 @@ const InventoryScreen = () => {
 
   const renderOverallInventory = () => {
     return (
-      <div className="flex px-4 py-5 rounded-lg h-max mx-8 my-[10px] bg-white flex-col">
-        <div className="text-lg font-medium mb-4">Overall Inventory</div>
+      <div className="flex px-4 py-2 rounded-lg h-max mx-8 my-1 bg-white flex-col">
+        <div className="text-lg font-medium mb-2">Overall Inventory</div>
         <div className="flex flex-row justify-between text-gray-600">
           <div className="">
             <div className="text-[#F15E2B] text-lg font-medium ">

@@ -100,3 +100,7 @@ code {
   -moz-box-shadow: 8px 8px 18px -12px rgba(66, 68, 90, 1);
   box-shadow: 8px 8px 18px -12px rgba(66, 68, 90, 1);
 }
+
+.ant-table-cell {
+  padding: 4px 8px !important;
+}

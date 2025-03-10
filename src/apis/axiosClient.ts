@@ -2,7 +2,7 @@ import axios from "axios";
 import queryString from "query-string";
 import { localDataNames } from "../constant/appInfor";
 
-const IPv4_Address = `192.168.1.244`;
+const IPv4_Address = `192.168.1.2`;
 
 const baseURL = `http://${IPv4_Address}:3001`;
 

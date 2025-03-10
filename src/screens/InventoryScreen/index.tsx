@@ -31,7 +31,6 @@ import { SubProductModel } from "../../models/SubProductModel";
 import { SupplierModel } from "../../models/SupplierModel";
 import { replaceName } from "../../utils/replaceName";
 import { truncated } from "../../utils/truncatedText";
-import axios from "axios";
 
 const { confirm } = Modal;
 
@@ -62,6 +61,8 @@ const InventoryScreen = () => {
 
   const [isFilter, setIsFilter] = useState(false);
 
+  const [categoryQuanity, setCategoryQuanity] = useState<number>(0);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -81,11 +82,18 @@ const InventoryScreen = () => {
     try {
       await getProducts();
       await getProducts();
+      await getCategories();
     } catch (error: any) {
       message.error(error.message);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getCategories = async () => {
+    const api = `/category`;
+    const res = await handleAPI(api);
+    res.data && setCategoryQuanity(res.data.length);
   };
 
   const getProducts = async () => {
@@ -119,7 +127,9 @@ const InventoryScreen = () => {
 
   const removeProduct = async (id: string) => {
     try {
-      await handleAPI(`product/remove?id=${id}`, undefined, "delete");
+      setIsLoading(true);
+      const api = `product/remove?id=${id}`;
+      await handleAPI(api, undefined, "delete");
 
       const items = [...products];
       const index = items.findIndex((element) => element._id === id);
@@ -131,6 +141,8 @@ const InventoryScreen = () => {
       message.success("Remove product successfully!");
     } catch (error: any) {
       message.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -402,7 +414,7 @@ const InventoryScreen = () => {
             <div className="text-[#F15E2B] text-lg font-medium ">
               Categories
             </div>
-            <div className="font-medium">20</div>
+            <div className="font-medium">{categoryQuanity ?? 0}</div>
             <div className="font-normal">Last 7 days</div>
           </div>
           <div className="border" />

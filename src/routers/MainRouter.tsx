@@ -12,6 +12,7 @@ import ReportScreen from "../screens/ReportScreen";
 import SuppliersScreen from "../screens/SupplierScreen";
 import CategoryDetailScreen from "../screens/CategoryScreen/CategoryDetailScreen";
 import ProductDetailScreen from "../screens/InventoryScreen/ProductDetailScreen";
+import PromotionScreen from "../screens/PromotionScreen";
 
 const { Content } = Layout;
 
@@ -47,6 +48,7 @@ const MainRouter = () => {
               <Route path="/suppliers" element={<SuppliersScreen />} />
               <Route path="/orders" element={<OrderScreen />} />
               <Route path="/manage-store" element={<ManageStoreScreen />} />
+              <Route path="/promotions" element={<PromotionScreen />} />
             </Routes>
           </Content>
         </Layout>

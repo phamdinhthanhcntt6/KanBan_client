@@ -1,4 +1,3 @@
-import { DeleteTwoTone } from "@ant-design/icons";
 import { Button, Table, Typography } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { Resizable } from "re-resizable";

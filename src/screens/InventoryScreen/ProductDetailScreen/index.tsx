@@ -1,12 +1,18 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import handleAPI from "../../../apis/handleApi";
-import { ProductModel } from "../../../models/ProductModel";
-import { SubProductModel } from "../../../models/SubProductModel";
+import {
+  ArrowLeftOutlined,
+  DeleteFilled,
+  EditFilled,
+  PlusCircleFilled,
+} from "@ant-design/icons";
 import { Avatar, Button, Empty, message, Modal, Space, Spin, Tag } from "antd";
 import Table, { ColumnProps } from "antd/es/table";
-import { DeleteFilled, EditFilled, PlusCircleFilled } from "@ant-design/icons";
+
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import handleAPI from "../../../apis/handleApi";
 import { SubProductModal } from "../../../modals";
+import { ProductModel } from "../../../models/ProductModel";
+import { SubProductModel } from "../../../models/SubProductModel";
 
 const { confirm } = Modal;
 
@@ -28,6 +34,8 @@ const ProductDetailScreen = () => {
   const [searchParam] = useSearchParams();
 
   const id = searchParam.get("id");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     id && getProductDetail();
@@ -79,6 +87,13 @@ const ProductDetailScreen = () => {
       title: "Price",
       align: "right",
       render: (price: number) => <>{price}</>,
+    },
+    {
+      key: "discount",
+      dataIndex: "discount",
+      title: "Discount (%)",
+      align: "right",
+      render: (discount: number) => <>{discount ?? null}</>,
     },
     {
       key: "quantity",
@@ -138,14 +153,21 @@ const ProductDetailScreen = () => {
         <Spin />
       ) : productDetail ? (
         <div className="flex flex-col w-full">
-          <div className="font-medium text-xl px-6">{productDetail?.title}</div>
           <div className="mt-1 w-full px-6">
             <Table
               columns={columns}
               dataSource={subProducts}
               className="w-full"
               title={() => (
-                <div className="w-full flex justify-end">
+                <div className="w-full flex justify-between">
+                  <div className="font-medium text-xl flex gap-x-4 items-center">
+                    <ArrowLeftOutlined
+                      onClick={() => {
+                        navigate(-1);
+                      }}
+                    />
+                    {productDetail?.title}
+                  </div>
                   <Button
                     type="dashed"
                     onClick={() => {

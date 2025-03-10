@@ -239,7 +239,6 @@ const CreateProductScreen = () => {
                   apiKey="43qsfp1ypjtycnuhgct3c0vow2guutz01d4wkh2kzn7mr3lz"
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   initialValue={content !== "" ? content : ""}
-                  // value={content}
                   init={{
                     height: 500,
                     menubar: true,

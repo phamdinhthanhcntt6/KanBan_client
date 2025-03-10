@@ -2,6 +2,7 @@ import {
   BarChartOutlined,
   CodeSandboxOutlined,
   HomeOutlined,
+  PercentageOutlined,
   ProfileOutlined,
   ShoppingCartOutlined,
   TagOutlined,
@@ -26,12 +27,6 @@ const SiderComponent = () => {
       key: "inventory",
       label: <Link to={"/inventory"}>Inventory</Link>,
       icon: <ShoppingCartOutlined />,
-      // children: [
-      //   {
-      //     key: "add_product",
-      //     label: <Link to={"/inventory/product"}>Product</Link>,
-      //   },
-      // ],
     },
     {
       key: "category",
@@ -57,6 +52,11 @@ const SiderComponent = () => {
       key: "managestore",
       label: <Link to={"/manage-store"}>Manage Store</Link>,
       icon: <ProfileOutlined />,
+    },
+    {
+      key: "promotions",
+      label: <Link to={"/promotions"}>Promotions</Link>,
+      icon: <PercentageOutlined />,
     },
   ];
   return (

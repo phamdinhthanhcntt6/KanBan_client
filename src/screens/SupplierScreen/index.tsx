@@ -26,8 +26,6 @@ const SuppliersScreen = () => {
 
   const [forms, setForms] = useState<FormModel>();
 
-  console.log(suppliers);
-
   useEffect(() => {
     getData();
   }, []);

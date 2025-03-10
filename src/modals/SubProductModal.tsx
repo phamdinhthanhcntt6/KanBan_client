@@ -163,19 +163,20 @@ const SubProductModal = (props: Props) => {
         >
           <ColorPicker format="hex" />
         </Form.Item>
-        <Form.Item
-          name="size"
-          label="Size"
-          rules={[
-            {
-              required: true,
-              message: "Enter the size",
-            },
-          ]}
-        >
-          <Input allowClear />
-        </Form.Item>
         <div className="flex flex-row w-full justify-between gap-x-4">
+          <Form.Item
+            name="size"
+            label="Size"
+            className="w-full"
+            rules={[
+              {
+                required: true,
+                message: "Enter the size",
+              },
+            ]}
+          >
+            <Input allowClear />
+          </Form.Item>
           <Form.Item
             name="quantity"
             label="Quantity"
@@ -184,6 +185,21 @@ const SubProductModal = (props: Props) => {
               {
                 required: true,
                 message: "Enter quantity",
+              },
+            ]}
+          >
+            <InputNumber className="w-full" />
+          </Form.Item>
+        </div>
+        <div className="flex flex-row w-full justify-between gap-x-4">
+          <Form.Item
+            name="discount"
+            label="Discount"
+            className="w-full"
+            rules={[
+              {
+                required: true,
+                message: "Enter discount",
               },
             ]}
           >

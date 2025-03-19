@@ -207,9 +207,7 @@ const InventoryScreen = () => {
           <Space>
             <Avatar.Group shape="square">
               {image.map((item, index: number) => (
-                <>
-                  <Avatar src={item} key={index} size={50} />
-                </>
+                <Avatar src={item} key={index} size={50} />
               ))}
             </Avatar.Group>
           </Space>

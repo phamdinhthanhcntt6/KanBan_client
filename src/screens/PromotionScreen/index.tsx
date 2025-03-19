@@ -1,5 +1,5 @@
 import { DeleteFilled, EditFilled } from "@ant-design/icons";
-import { Button, message, Modal, Space, Table } from "antd";
+import { Avatar, Button, message, Modal, Space, Table } from "antd";
 import { ColumnProps } from "antd/es/table";
 import { useEffect, useState } from "react";
 import handleAPI from "../../apis/handleApi";
@@ -61,6 +61,22 @@ const PromotionScreen = () => {
 
   const columns: ColumnProps<PromotionModel>[] = [
     {
+      key: "image",
+      dataIndex: "images",
+      title: "Image",
+      render: (image: string[]) =>
+        image &&
+        image.length > 0 && (
+          <Space>
+            <Avatar.Group shape="square" className="border rounded-lg">
+              {image.map((item, index: number) => (
+                <Avatar src={item} key={index} size={50} />
+              ))}
+            </Avatar.Group>
+          </Space>
+        ),
+    },
+    {
       key: "title",
       dataIndex: "",
       title: "Title",
@@ -121,8 +137,6 @@ const PromotionScreen = () => {
     },
   ];
 
-  if (isLoading) return <></>;
-
   return (
     <div className="flex px-4 py-2 rounded-lg h-max mx-8 my-1 bg-white flex-col">
       <div className="flex justify-between mb-4">
@@ -137,7 +151,12 @@ const PromotionScreen = () => {
           Create promotion
         </Button>
       </div>
-      <Table dataSource={promotions} columns={columns} size="middle" />
+      <Table
+        loading={isLoading}
+        dataSource={promotions}
+        columns={columns}
+        size="middle"
+      />
       <PromotionModal
         visible={isVisible}
         onClose={() => {

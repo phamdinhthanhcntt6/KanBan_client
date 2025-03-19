@@ -46,10 +46,15 @@ const HeaderComponent = () => {
             src={icons.notification}
             className="cursor-pointer"
             onClick={() => {}}
+            alt="notification"
           />
         </Badge>
         <Dropdown menu={{ items }}>
-          <Avatar src={user.photoUrl} className="cursor-pointer" />
+          <Avatar
+            src={user.photoUrl}
+            alt="avartar"
+            className="cursor-pointer"
+          />
         </Dropdown>
       </div>
     </Header>

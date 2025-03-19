@@ -160,6 +160,7 @@ const PromotionModal = (props: Props) => {
         onChange={handleChange}
         onPreview={handlePreview}
         accept="image/*"
+        maxCount={1}
       >
         Upload
       </Upload>
